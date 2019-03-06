@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="flexible" content="initial-dpr=1">
+    <!--需要设置固定dpr时加入 <meta name="flexible" content="initial-dpr=1">-->
+    <!--step-1 引入flexible.js -->
+    <script src="http://g.tbcdn.cn/mtb/lib-flexible/0.3.4/??flexible_css.js,flexible.js"></script>
+    <link rel="stylesheet" href="../css/normalize.css" type="text/css">
+    <link rel="stylesheet" href="../css/mycss.css">
+    <title>修改密码</title>
+</head>
+<body>
+<div class="Scenic-PWD-container">
+    <header class="header" onclick="api.closeWin();">
+        <div class="header-inner">
+            <span>修改密码</span>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="main-box-pwd">
+            <input type="password" placeholder="输入您的新密码" autofocus class="PWD">
+            <input type="password" placeholder="确认您的密码" class="rePWD">
+        </div>
+    </main>
+    <footer class="footer">
+        <button class="btnToChangePWD">
+            提交
+        </button>
+    </footer>
+</div>
+</body>
+</html>
+
+<script src="../script/jquery.min.js"></script>
+<script src="../script/api.js"></script>
+<script>
+    apiready = function () {
+    api.setStatusBarStyle({
+    style: 'dark'
+  });
+      $api.fixStatusBar($api.dom('.header'));
+        $api.addEvt($api.dom('.btnToChangePWD'), 'click', function () {
+            if ($api.val($api.dom(".PWD")) === '' || $api.val($api.dom(".rePWD")) === '') {
+                api.toast({
+                    msg: '密码不能为空',
+                    duration: '2000',
+                    location: 'bottom'
+                })
+            } else if ($api.val($api.dom(".PWD")) != $api.val($api.dom(".rePWD"))) {
+                api.toast({
+                    msg: '两次输入密码不一致',
+                })
+                $api.dom('.rePWD').focus();
+            } else {
+                $.ajax({
+                    type: 'post',
+                    url: url + '/App/Personal/api/',
+                    dataType: 'json',
+                    data: {
+                        api_name: 'changePwd',
+                        password: $api.val($api.dom(".PWD")),
+                        compass: $api.val($api.dom('.rePWD')),
+                        token:api.pageParam.token
+                    },
+                    success: function (res) {
+                        console.log(res);
+                        if (res.code == 1) {
+                            api.toast({
+                                msg: '密码修改成功',
+                                duration: '2000',
+                                location: 'bottom'
+                            });
+                            api.openWin({
+                                name: 'scenic-pwd-chage-success',
+                                url: 'Scenic-PWD-chage-success.html',
+                                pageParam: {
+                                    token:api.pageParam.token,
+                                    type:api.pageParam.type
+                                }
+                            })
+                        }else{
+                            api.toast({msg:res.msg});
+                        }
+                    }
+                })
+            }
+        })
+    }
+</script>

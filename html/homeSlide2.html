@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+	<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+	<title>title</title>
+	<link rel="stylesheet" type="text/css" href="../css/r-common.css" />
+	<style>
+		#fram {
+			display: flex;
+			width: 100%;
+			height: 100%;
+			flex-direction: column;
+		}
+
+		body{
+			font-size: 12px;
+		}
+
+		header {
+			font-size: 2rem;
+			text-align: center;
+			padding: 5% 0 2%;
+			border-bottom: 1px solid #666;
+		}
+
+		.menu {
+			width: 100%;
+			display: flex;
+			justify-content: space-around;
+			align-items: center;
+			font-size: 1.6rem;
+			height: 50px;
+			border-bottom: 1px solid #ccc;
+		}
+
+		.menu li {
+			color: #ccc;
+			padding: 1%;
+		}
+
+		.menu .active {
+			border-bottom: 2px solid #ff9000;
+			color: #666;
+		}
+
+		.list {
+			width: 90%;
+			padding: 0 5%;
+			flex: 1;
+			overflow-y: scroll;
+			font-size: 1.2rem;
+			-webkit-overflow-scrolling: touch;
+		}
+		.list::-webkit-scrollbar {
+			width: 0;
+			height: 0;
+		}
+		.list li {
+			width: 100%;
+			display: flex;
+			justify-content: space-between;
+			padding: 2% 0;
+			border-bottom: 1px solid #eee;
+		}
+
+		.list li div p:first-of-type {
+			margin: 0;
+			font-size: 1.5rem;
+		}
+
+		.list li div p:not(:first-of-type) {
+			font-size: 1.4rem;
+		}
+
+		.list li div p {
+			margin-top: 2%;
+		}
+
+		.list li div:first-of-type p:nth-of-type(2) {
+			color: #999;
+		}
+
+		.list li div p b {
+			color: #ff7d78;
+		}
+
+		.list li div:first-of-type {
+			width: 70%;
+		}
+
+		.list li div:last-of-type {
+			width: 30%;
+			text-align: right;
+		}
+	</style>
+</head>
+
+<body>
+	<div id="fram">
+		<header>订单列表</header>
+		<nav class="menu">
+			<li class="active" data-status='4'>全部</li>
+			<li data-status='0'>待核销</li>
+			<li data-status='1'>已核销</li>
+			<li data-status='3'>过期</li>
+			<li data-status='2'>退款</li>
+		</nav>
+		<ul class="list">
+			<!--<li>
+				<div>
+					<p>环球亲子水世界担任门票</p>
+					<p>有效期至：2017-06-12 18:00</p>
+					<p>林消防</p>
+					<p>15001249715</p>
+				</div>
+				<div>
+					<p>待审核</p>
+					<p>￥90.00</p>
+					<p>&times;2</p>
+					<p>合计：<b>￥180.00</b></p>
+				</div>
+			</li>-->
+		</ul>
+	</div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script src="../script/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="../script/fastclick.js" type="text/javascript" charset="utf-8"></script>
+<script src="../script/dlc.js" type="text/javascript" charset="utf-8"></script>
+<script src="../script/Unix.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+	var xy_url = 'http://mobile.somochina.com/app/Users/index',refreshIndex='';
+	apiready = function() {
+		$('.menu').on('click', 'li', function() {
+			$(this).addClass('active').siblings().removeClass('active')
+			type($(this).attr('data-status'));
+			refreshIndex=$(this).attr('data-status');
+		});
+
+//监听订单详情返回
+api.addEventListener({
+    name: 'Ticket'
+}, function(ret, err) {
+    window.location.reload()
+})
+
+
+
+		$('.list').on('click', 'li', function() {
+			var that = this;
+			api.openWin({
+				name: 'xy_orderdetail',
+				url: 'xy_orderdetail.html',
+				pageParam: {
+					id: $(this).attr('data-id'),
+					token:localStorage.getItem('token'),
+					m_name:$(this).attr('data-name')
+				}
+			});
+
+			// location.href='xyorderdetail.html?money='+$(this).data('money')+'&type='+$(this).data('type')
+		})
+
+		function type(type) {
+			$('ul').children().remove()
+			api.showProgress({
+				style: 'default',
+				animationType: 'fade',
+				title: '努力加载中...',
+				text: '先喝杯茶...',
+				modal: false
+			});
+
+			$.ajax({
+				type: "post",
+				url: xy_url,
+				data: {
+					token: localStorage.getItem('token'),
+					api_name: 'Orderslist',
+					status: type
+				},
+				dataType: 'json',
+				success: function(ret) {
+					console.log(ret);
+					if (ret) {
+						if (ret.data.length > 0) {
+							for (i in ret.data) {
+								$('.list').append('<li data-id="' + ret.data[i].id + '" data-name="' + ret.data[i].name + '">' +
+									'<div>' +
+									'<p class="text-overflow">' + ret.data[i].name + '</p>' +
+									'<p>有效期至：' + ret.data[i].buytime + '</p>' +
+									'<p>' + ret.data[i].nickname + '</p>' +
+									'<p>' + ret.data[i].vipmobile + '</p>' +
+									'</div>' +
+									'<div>' +
+									'<p style="color:' + (ret.data[i].status == 0 ? '#ff9000' : ret.data[i].status == 1 ? '#98d5cd' : ret.data[i].status == 2 ? '#647ef0' : '#ccc') + '">' + (ret.data[i].status == 0 ? '待核销' : ret.data[i].status == 1 ? '已核销' : ret.data[i].status ==
+										2 ? '已退票' : ret.data[i].status == 3 ? '已退款' : ret.data[i].status == 5 ? '拒绝退款' : '过期') + '</p>' +
+									'<p>￥' + ret.data[i].payprice + '</p>' +
+									'<p>&times;' + ret.data[i].totalnum + '</p>' +
+									'<p>合计：<b>￥' + (ret.data[i].totalnum * ret.data[i].payprice).toFixed(2) + '</b></p>' +
+									'</div>' +
+									'</li>')
+							}
+						} else {
+							$('.list').append('<div style="font-size:16px; color:#999; font-weight:700; display:flex; align-items: center; justify-content: center; margin-top:25% ;width:100%;">暂时没有数据...</div>')
+						}
+						api.hideProgress();
+						//api.refreshHeaderLoadDone();
+					}
+				}
+			});
+		}
+		type(4) //初始化
+
+
+//		api.setRefreshHeaderInfo({
+//			loadingImg: 'widget://image/refresh.png',
+//			bgColor: '#ccc',
+//			textColor: '#fff',
+//			textDown: '下拉刷新...',
+//			textUp: '松开刷新...'
+//		}, function(ret, err) {
+//			type(refreshIndex);
+//		});
+	};
+</script>
+
+</html>

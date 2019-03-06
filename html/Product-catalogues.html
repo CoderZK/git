@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <!--<meta name="flexible" content="initial-dpr=1">-->
+    <!--需要设置固定dpr时加入 <meta name="flexible" content="initial-dpr=1">-->
+    <!--step-1 引入flexible.script -->
+    <script src="http://g.tbcdn.cn/mtb/lib-flexible/0.3.4/??flexible_css.js,flexible.js"></script>
+    <link rel="stylesheet" href="../css/normalize.css" type="text/css">
+    <link rel="stylesheet" href="../css/swiper.min.css" type="text/css">
+    <link rel="stylesheet" href="../css/mycss.css">
+    <title>景区首页</title>
+    <style>
+        html, body {
+            position: relative;
+            height: 100%;
+        }
+
+        .swiper-container {
+            width: 100%;
+            height: 100%;
+
+        }
+
+        .swiper-slide {
+            text-align: center;
+            font-size: 18px;
+            background: #fff;
+
+            /* Center slide text vertically */
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: -webkit-flex;
+            display: flex;
+            -webkit-box-pack: center;
+            -ms-flex-pack: center;
+            -webkit-justify-content: center;
+            justify-content: center;
+            -webkit-box-align: center;
+            -ms-flex-align: center;
+            -webkit-align-items: center;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+<div class="index-container">
+    <header class="header">
+        <div class="header-inner">
+            景区
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="carousel">
+
+            <div class="swiper-container">
+                <div class="swiper-wrapper">
+                    <div class="swiper-slide"><img src="../image/carousel-1.png"></div>
+                    <div class="swiper-slide"><img src="../image/carousel-2.png"></div>
+                </div>
+            </div>
+
+            <div class="mask">
+                <h1 class="fw500 fs32">环球亲子水世界(4A)</h1>
+                <p class="fs22">开放时间：8:00 ~ 18:00</p>
+            </div>
+
+        </div>
+
+        <div class="ticket">
+            <ul>
+
+                <li>
+                    <p><span>成人单人票</span><span>协议价：70/张</span></p>
+                    <p><span>已售：2000张</span><span>销售价：90/张</span></p>
+                </li>
+
+                <li>
+                    <p><span>亲子双人票（成人票+儿童票）</span><span>协议价：70/张</span></p>
+                    <p><span>已售：2000张</span><span>销售价：90/张</span></p>
+                </li>
+
+                <li>
+                    <p><span>三口之家票</span><span>协议价：70/张</span></p>
+                    <p><span>已售：2000张</span><span>销售价：90/张</span></p>
+                </li>
+
+                <li>
+                    <p><span>情侣双人票</span><span>协议价：70/张</span></p>
+                    <p><span>已售：2000张</span><span>销售价：90/张</span></p>
+                </li>
+
+            </ul>
+        </div>
+
+
+    </main>
+
+    <footer class="footer">
+        <div class="footer-inner">
+
+            <div class="hx">
+                <i><img src="../image/hx-1.png"></i>
+                <span>核销</span>
+            </div>
+
+            <div class="cp">
+                <i><img src="../image/cp.png"></i>
+                <span>产品</span>
+            </div>
+
+            <div class="dd">
+                <i><img src="../image/dd.png"></i>
+                <span> 订单</span>
+            </div>
+
+            <div class="zd">
+                <i><img src="../image/zd.png"></i>
+                <span>账单</span>
+            </div>
+
+        </div>
+    </footer>
+</div>
+
+<script src="../script/swiper.min.js"></script>
+<!-- Initialize Swiper -->
+<script>
+    var swiper = new Swiper('.swiper-container', {
+        paginationClickable: true,
+        spaceBetween: 30,
+        centeredSlides: true,
+        autoplay: 2500,
+        autoplayDisableOnInteraction: false
+    });
+</script>
+</body>
+</html>

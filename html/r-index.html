@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>端口选择</title>
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+    <link rel="stylesheet" type="text/css" href="../css/r-common.css"/>
+</head>
+<style type="text/css">
+    body {
+        background-image: url(../image/r-bg0.png);
+        background: #404040;
+    }
+
+    .login {
+        width: 90%;
+        padding: 25% 5% 1%;
+    }
+
+    .login .logo {
+        display: flex;
+        flex-flow: column;
+        justify-content: center;
+        align-items: center;
+        font-size: 1.5rem;
+        color: #fff;
+        margin-bottom: 15%;
+    }
+
+    .login .logo img {
+        width: 27%;
+        margin-bottom: 2%
+    }
+
+    .login .logo span {
+        letter-spacing: 0.5rem
+    }
+
+    .login .logo span b {
+        color: #ff9900
+    }
+
+    .login p {
+        width: 80%;
+        padding: 3% 0;
+        display: flex;
+        justify-content: space-between;
+        margin: 0 auto 5%;
+        border-radius: 6px;
+        background: #fff;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+    }
+
+    .login p img {
+        width: 8%;
+        padding: 0 8%;
+    }
+
+    .login p span {
+        font-size: 1.5rem;
+        text-align: center;
+        width: 80%;
+        border-left: 1px solid #ccc;
+        padding: 1% 0;
+        letter-spacing: 2px
+    }
+
+    .confirm {
+        color: #fff;
+        font-size: 1.8rem;
+        display: block;
+        margin: 0% auto;
+        width: 80%;
+        height: 4.5rem;
+        background: #ff9000;
+        border: none;
+        outline: none;
+        border-radius: 6px;
+        letter-spacing: 15px
+    }
+
+</style>
+<body>
+<div class="login">
+    <div class="logo">
+        <img src="../image/r-logo.png" alt="">
+        <span>宿<b>盟</b>网络</span>
+    </div>
+    <p class="tourist"><img src="../image/r-admin.png" alt=""><span>游客登录</span></p>
+    <p class="user"><img src="../image/r-user.png" alt=""><span>用户入口</span></p>
+    <p class="admin"><img src="../image/r-admin.png" alt=""><span>供应商入口</span></p>
+</div>
+</body>
+</html>
+<script src="../script/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="../script/fastclick.js" type="text/javascript" charset="utf-8"></script>
+<script src="../script/dlc.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+    apiready = function () {
+        api.setStatusBarStyle({
+            style: 'light'
+        });
+        localStorage.removeItem('token');
+				$('.user').click(function(){
+          api.openWin({
+              name: 'user-login',
+              url: 'user-login.html'
+          });
+
+		    })
+        $('.tourist').click(function(){
+          api.openWin({
+              name: 'homeSlide',
+              url: 'homeSlide.html'
+          });
+
+        })
+		    $('.admin').click(function(){
+          api.openWin({
+              name: 'admin-login',
+              url: 'admin-login.html'
+          });
+		    })
+    }
+    $.ajax({
+      url:'http://itunes.apple.com/lookup?id=1305613384',
+      data:{},
+      type:'post',
+      dataType:'JSON',
+      success:function(res) {
+        if(res.results[0].version !=='1.0.5'){
+          $(".tourist").hide();
+        }
+      }
+    })
+</script>

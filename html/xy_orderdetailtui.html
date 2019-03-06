@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <!--<meta name="flexible" content="initial-dpr=1">-->
+    <!--需要设置固定dpr时加入 <meta name="flexible" content="initial-dpr=1">-->
+    <!--step-1 引入flexible.script -->
+    <script src="http://g.tbcdn.cn/mtb/lib-flexible/0.3.4/??flexible_css.js,flexible.js"></script>
+    <link rel="stylesheet" href="../css/normalize.css" type="text/css">
+    <link rel="stylesheet" href="../css/mycss.css">
+    <style type="text/css">
+        .xy_line11 {
+            margin-top: 1rem;
+            text-align: center
+        }
+
+        .xy_line11 p {
+            display: inline-block;
+            -moz-border-radius: 5px;
+            -webkit-border-radius: 5px;
+            border-radius: 5px;
+            width: 7.30667rem;
+            line-height: 1.04rem;
+            color: white;
+            font-size: 15px;
+            background-color: #ff9000
+        }
+
+        [data-dpr="2"] .xy_line11 p {
+            font-size: 30px
+        }
+
+        [data-dpr="3"] .xy_line11 p {
+            font-size: 45px
+        }
+    </style>
+    <title>查询核销</title>
+</head>
+
+<body>
+    <div class="index-container">
+        <header class="header" id="header">
+            <div class="header-inner">
+                景区
+            </div>
+        </header>
+
+        <main class="main">
+            <article class="article">
+                <ul class="detail">
+                    <li><span class="fw500 fs30">门票名称：</span><span class="fs30" id="name">环球亲子水世界单人成人票</span></li>
+                    <li><span>使用期限：</span><span id="usetime">2017-07-09  周日</span></li>
+                    <li><span>门票时限：</span><span id="limittime">2017-07-09  周日</span></li>
+                    <li><span>购买单价：</span><span id="sigleprice">￥90.00</span></li>
+                    <li><span>协议价格：</span><span id="protocalprice">￥90.00</span></li>
+                    <li><span>购买数量：</span><span id="nums">2张</span></li>
+                    <li><span>合计金额：</span><span id="totalprice">￥180.00</span></li>
+                    <li><span>合计利润：</span><span id="totalprice2">￥180.00</span></li>
+                    <li><span>入园地址：</span><span id="address">￥180.00</span></li>
+                    <li><span>入园方式：</span><span id="innerway">￥180.00</span></li>
+
+                    <li><span>游客姓名：</span><span id="tourname">林小芳</span></li>
+                    <li><span>身份证号：</span><span id="idcard">112233199012128888</span></li>
+                    <li><span>手机号码：</span><span id="phonenum">15100001234</span></li>
+                    <li><span>出票时间：</span><span id="outtime">2017-07-08  19:28</span></li>
+                    <li><span>门票码券：</span><span class="fw600 .fs30" id="ticketid">SW12345</span></li>
+                    <li><span>订单编号：</span><span id="orderid">1234567890000</span></li>
+                    <li><span>订单状态：</span><span class="FF9000" id="orderstatus">待核销</span></li>
+                    <li><span>退票原因：</span><span>
+                  <div class="cstyle">
+                    <label for="r1">不想去了</label>
+                    <input type="radio" id="r1" name="r1" value="不想去了" class="c1" checked/>
+                    <label for="r2">时间冲突</label>
+                    <input type="radio" id="r2" name="r1" class="c1" value="时间冲突"/>
+                  </div>
+                  <div class="cstyle">
+                    <label for="r3">其它</label>
+                    <input type="radio" id="r3" name="r1"/>
+                    <input type="text" placeholder="请填写原因" class="c1" value=""/>
+                  </div>
+                </span></li>
+                </ul>
+            </article>
+
+            <div class="xy_line11" id="applyRefus" style="margin-bottom:20px;">
+                <p>提交退票申请</p>
+            </div>
+        </main>
+    </div>
+
+    <script type="text/javascript" src="../script/jquery.min.js"></script>
+    <script src="../script/Unix.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../script/api.js" type="text/javascript" charset="utf-8"></script>
+    <script type="text/javascript">
+        apiready = function() {
+          $api.fixStatusBar($api.dom('#header'));
+
+          api.setStatusBarStyle({
+            style: 'dark'
+        });
+            var url = 'http://mobile.somochina.com/app/Users/index',
+                shopid = '';
+            console.log(api.pageParam.id);
+            $.ajax({
+                type: 'POST',
+                url: url,
+                dataType: 'json',
+                data: {
+                    api_name: 'OrdersDetail',
+                    token: localStorage.getItem('token'),
+                    orderid: api.pageParam.id
+                },
+                success: function(res) {
+                    $('#name').text(res.data.name);
+                    $('#usetime').text(date('Y-m-d H:i:s',res.data.appointment_date));
+                    $('#limittime').text(date('Y-m-d H:i:s',res.data.classtimeed));
+                    $('#sigleprice').text(res.data.payprice);
+                    $('#protocalprice').text(res.data.price);
+                    $('#nums').text(res.data.totalnum);
+                    $('#totalprice').text(res.data.totalprice);
+                    $('#totalprice2').text(res.data.totalprofit);
+                    $('#address').text(res.data.location);
+                    $('#innerway').text(res.data.way);
+                    $('#tourname').text(res.data.vipname);
+                    $('#idcard').text(res.data.idcard);
+                    $('#phonenum').text(res.data.vipmobile);
+                    $('#outtime').text(date('Y-m-d H:i:s',res.data.ctime));
+                    $('#ticketid').text(res.data.paytype);
+                    $('#orderid').text(res.data.oid);
+                    $('#orderstatus').text(res.data.status == '0' ? '待核销' : (res.data.status == '1' ? '已核销' : (res.data.status == '2' ? '已退票未退款' : '退票退款')));
+                    shopid = res.data.shopid;
+                },
+                error: function(err) {
+
+                }
+            });
+
+            function formatDate(now, ff) {
+                var year = now.getFullYear();
+                var month = now.getMonth() + 1 < 10 ? '0' + (now.getMonth() + 1) : now.getMonth() + 1;
+                var date = now.getDate() < 10 ? '0' + now.getDate() : now.getDate();
+                var hour = now.getHours() < 10 ? '0' + now.getHours() : now.getHours();
+                var minute = now.getMinutes() < 10 ? '0' + now.getMinutes() : now.getMinutes();
+                var second = now.getSeconds() < 10 ? '0' + now.getSeconds() : now.getSeconds();
+                if (ff == 'Y-m-d') {
+                    return year + "-" + month + "-" + date;
+                } else if (ff == 'Y-m-d H:i:s') {
+                    return year + "-" + month + "-" + date + " " + hour + ":" + minute + ":" + second;
+                } else if (ff == 'H:i') {
+                    return hour + ":" + minute;
+                }
+            }
+
+            $('#applyRefus').on({
+                'click': function(e) {
+                    console.log($('.c1:checked').val());
+                    $.ajax({
+                        type: 'POST',
+                        url: url,
+                        dataType: 'json',
+                        data: {
+                            api_name: 'tuipiao_sq',
+                            token: localStorage.getItem('token'),
+                            id: api.pageParam.id,
+                            vip_id: shopid,
+                            msg: $('.c1:checked').val()
+                        },
+                        success: function(res) {
+                          console.log(res);
+                            if (res.code == 1) {
+                                api.toast({
+                                    msg: '申请成功',
+                                    duration: 2000,
+                                    location: 'bottom'
+                                });
+                            } else {
+                                api.toast({
+                                    msg: '申请失败，请稍后重试',
+                                    duration: 2000,
+                                    location: 'bottom'
+                                });
+                            }
+
+                            setTimeout(function() {
+                                api.closeToWin({
+                                    name: 'slidLayout'
+                                });
+
+                            }, 2000);
+                        },
+                        error: function(err) {
+
+                        }
+                    });
+                }
+            })
+
+        };
+    </script>
+</body>
+
+</html>

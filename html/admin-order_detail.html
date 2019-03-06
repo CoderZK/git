@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>用户注册协议</title>
+		<meta name="viewport" content="initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+		<link rel="stylesheet" type="text/css" href="../css/r-common.css"/>
+	</head>
+	<style type="text/css">
+		  body{
+		    background: #fff
+		  }
+		   header{
+		     display: flex;
+		     flex-direction: row;
+		     justify-content: space-between;
+		     align-items: center;
+		     width: 100%;
+		     padding: 25px 0 0;
+		     font-size: 18px;
+		     height: 45px;
+		     border-bottom: 1px solid #dadada
+		   }
+		   header img{width: 3%;padding: 2% 3%;}
+		
+		 #main{
+		 	padding: 3% 10% 0;
+		 	font-size:1.4rem
+		 }
+		 #main p{margin-bottom: 2%;font-size: 16px;}
+		 #main p:first-of-type{font-size:1.6rem}
+		.btn_box{text-align: center;margin-top: 40px;display: none;}
+		#btn{text-decoration: underline;font-size: 18px;color: #ff8b00;}
+	</style>
+	<body>
+	    <header>
+	        <img src="../image/r-back.png" class="back">
+	        <span>订单详情</span>
+	        <span></span>
+	    </header>
+    	<div id="main">
+
+    	</div>
+		<div class="btn_box">
+			<a id="btn">确认核销</a>
+		</div>
+	</body>
+</html>
+<script src="../script/api.js" type="text/javascript" charset="utf-8"></script>
+<script src="../script/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="../script/fastclick.js" type="text/javascript" charset="utf-8"></script>
+<script src="../script/dlc.js" type="text/javascript" charset="utf-8"></script>
+<script src="../script/Unix.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+apiready = function(){
+function date(ddd){
+var a = new Array("日", "一", "二", "三", "四", "五", "六");  
+var week = new Date(ddd).getDay(); 
+var str = "周"+ a[week];  
+return str
+}
+  api.setStatusBarStyle({
+    style: 'dark'
+  });
+
+	$('.back').click(function(){api.closeWin();})
+	
+  //
+  function getLocalTime(nS) {     
+   return new Date(parseInt(nS) * 1000).toLocaleString().replace(/:\d{1,2}$/,' ');     
+} 
+  $.ajax({
+    type:'POST',
+    url:zf_url,
+    data:{api_name:'searchDetail',token:api.pageParam.token,order_id:api.pageParam.oid},
+    dataType:'json',
+    success:function(data){
+        console.log(data);
+        
+        if(data.code==1){
+		$('#btn').attr('data-id',data.data.id);
+        $('#main').append(
+        	'<p>门票名称：'+data.data.name+'</p>'+
+    		'<p>使用期限：'+data.data.buytime+' '+date(data.data.buytime)+'</p>'+
+    		'<p>购买单价：'+data.data.payprice+'</p>'+
+    		'<p>购买数量：'+data.data.totalnum+'</p>'+
+    		'<p>合计金额：'+data.data.totalprice+'</p>'+
+    		'<p>游客姓名：'+data.data.vipname+'</p>'+
+    		'<p>身份证号：'+data.data.idcard+'</p>'+
+    		'<p>手机号码：'+data.data.vipmobile+'</p>'+
+    		'<p>出票时间：'+getLocalTime(data.data.ctime)+'</p>'+
+    		'<p>门票码券：'+data.data.checkcode+'</p>'+
+    		'<p>订单编号：'+data.data.oid+'</p>'+
+    		'<p>订单状态：<span style="color:#ff8b00">未核销</span></p>');
+		if(data.code==1){$('.btn_box').show();}
+		}else{
+			$('#main').html( '<div style="text-align: center;padding: 30% 0;">' + '    <p>'+data.msg+'</p>' + '    <div>' + '        <img src="../image/hqq-bg.png" alt="" style="width: 100%;margin-top=8%">' + '    </div>' + '</div>')
+		}
+    }
+  });
+	$('#btn').on('click',function(){
+		console.log($(this).data('id'));
+		$.ajax({
+			type:'POST',
+			url:zf_url,
+			data:{api_name:'confirm',token:api.pageParam.token,order_id:$(this).data('id')},
+			dataType:'json',
+			success:function(res){
+				console.log(res);
+				if(res.code==1){
+					api.toast({msg:res.msg});
+					api.sendEvent({
+						name: 'confirm_order',
+						extra: {
+							key:1
+						}
+					});
+					api.closeWin();
+				}else{
+					api.toast({msg:res.msg});
+				}
+			}
+		})
+	});
+}
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

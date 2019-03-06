@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+		<link rel="stylesheet" type="text/css" href="../css/r-common.css"/>
+	</head>
+	<style type="text/css">
+  body{
+    background: #fff
+  }
+   header{
+     display: flex;
+     flex-direction: row;
+     justify-content: space-between;
+     align-items: center;
+     padding: 1.5rem 0 0;
+     font-size: 1.8rem;
+     border-bottom: 1px solid #dadada
+   }
+   header img{width: 3%;padding: 4% 3%;}
+   header .tit{margin-left:-8%}
+
+  .ball{
+    width: 80%;
+    margin: 0 auto;
+    height: 45%;
+    position: relative;
+  }
+  .ball img{position: absolute;}
+  .ball img:nth-of-type(1){
+    width: 20%;
+    left: calc(15% - 10%);
+    top: 45%;
+  }
+  .ball img:nth-of-type(2){
+    width: 32%;
+    left: calc(50% - 16%);
+    top: 30%;
+  }
+  .ball img:nth-of-type(3){
+    width: 17%;
+    left: calc(90% - 9%);
+    top: 37%;
+  }
+  .ball img:nth-of-type(4){
+    width: 28%;
+    left: calc(80% - 14%);
+    top: 65%;
+  }
+
+  .modify{display:none}
+  .renzhen{display:none}
+  .renzhen .a{font-size: 1.4rem;text-align: center;margin-top:3%;color:#ccc}
+
+  .countdown{font-size: 1.8rem;text-align: center;}
+  .countdown b{color: #ff7d78}
+  .href{text-align: center;padding:5% 0 1px;font-size: 1.6rem;color: #ff9000;}
+  .href span{border-bottom: 1px solid #ff9900}
+	</style>
+	<body>
+    <header>
+        <img src="../image/r-back.png" class="back">
+        <span class="tit"></span>
+        <span></span>
+    </header>
+    <div class="ball">
+      <img src="../image/r-pic0.png" alt="">
+      <img src="../image/r-pic3.png" alt="">
+      <img src="../image/r-pic1.png" alt="">
+      <img src="../image/r-pic2.png" alt="">
+    </div>
+    <div class="modify">
+	     <p class="countdown">密码修改成功，<b class="second">3s</b>后返回登录页</p>
+	    <p class="href"><span>立即返回</span></p>
+    </div>
+
+    <div class="renzhen">
+	     <p class="countdown">提交成功，请耐心等待</p>
+	    <p class="a"><span>审核结果将在1~3个工作日内发送到您的手机上</span></p>
+    </div>
+	</body>
+</html>
+<script src="../script/api.js" type="text/javascript" charset="utf-8"></script>
+<script src="../script/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="../script/fastclick.js" type="text/javascript" charset="utf-8"></script>
+<script src="../script/dlc.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+apiready = function(){
+  api.setStatusBarStyle({
+    style: 'dark'
+  });
+	$('.tit').text(api.pageParam.title);
+	$('title').text(api.pageParam.title);
+	
+	if(api.pageParam.title=='等待审核'){
+		$('.renzhen').show()
+		$('.back').click(function(){
+			api.closeToWin({
+            name: 'user-login'
+          });
+		})
+	}else{
+		$('.modify').show()
+		$('.back').click(function(){
+			api.closeWin()
+		})
+	}
+
+	$('.href').click(function(){
+        if(api.pageParam.from=='scenic'){
+          api.closeToWin({
+            name: 'admin-login'
+          });
+        }else{
+          api.closeToWin({
+            name: 'user-login'
+          });
+        }
+	});
+
+  var second = 3;
+  var t = setInterval(function() {
+    if(second <= 0) {
+      second = 0;
+      $(".second").text("0s");
+      clearInterval(t);
+      if(api.pageParam.from=='scenic'){
+        api.closeToWin({
+          name: 'admin-login'
+        });
+      }
+		if(api.pageParam.title=='等待审核'){
+		}else{
+			api.closeToWin({
+		     name: 'user-login'
+		});
+		}
+    } else {
+      second--;
+      $(".second").text(second + "s")
+    }
+  }, 1000);
+	}
+</script>

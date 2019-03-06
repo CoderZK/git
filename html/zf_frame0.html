@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="flexible" content="initial-dpr=1">
+		<!--需要设置固定dpr时加入 <meta name="flexible" content="initial-dpr=1">-->
+		<!--step-1 引入flexible.script -->
+		<script src="http://g.tbcdn.cn/mtb/lib-flexible/0.3.4/??flexible_css.js,flexible.js"></script>
+		<link rel="stylesheet" href="../css/normalize.css" type="text/css">
+		<link rel="stylesheet" href="../css/mycss.css">
+		<link rel="stylesheet" href="../css/api.css">
+		<title>查询核销</title>
+	</head>
+	<style>
+		html, body {
+			height: 100%
+		}
+		.index-container .main {
+			height: 100%;
+			display: flex;
+			flex-direction: column;
+		}
+		.RRR {
+			width: 90%;
+			padding: 0 5%;
+			flex: 1;
+			overflow-y: scroll;
+			font-size: 14px;
+			-webkit-overflow-scrolling: touch;
+		}
+		.RRR li {
+			width: 100%;
+			display: flex;
+			justify-content: space-between;
+			padding: 2% 0;
+			border-bottom: 1px solid #eee;
+			font-size: 14px;
+		}
+		[data-dpr="2"] .RRR li {
+			font-size: 28px;
+		}
+		[data-dpr="3"] .RRR li {
+			font-size: 42px;
+		}
+		.RRR li div p:first-of-type {
+			font-size: 17px;
+			margin: 0;
+		}
+		[data-dpr="2"] .RRR li div p:first-of-type {
+			font-size: 34px;
+		}
+		[data-dpr="3"] .RRR li div p:first-of-type {
+			font-size: 51px;
+		}
+		.RRR li div p {
+			margin-top: 2%;
+		}
+		.RRR li div:first-of-type p:nth-of-type(2) {
+			color: #999;
+		}
+		.RRR li div p b {
+			color: #ff7d78;
+		}
+		.RRR li div:first-of-type {
+			width: 70%;
+		}
+		.RRR li div:last-of-type {
+			width: 30%;
+			text-align: right;
+		}
+	</style>
+	<body>
+		<div class="index-container">
+			<main class="main">
+				<div class="main-inner">
+					<section class="section">
+						<input type="text" placeholder="输入核销码/身份证号/手机号" style="display:inline-block;width: 7.3rem;">
+						<button class="btn-query">
+							查询
+						</button>
+					</section>
+				</div>
+				<div class="RRR"></div>
+			</main>
+			<div class="modal-wrap Dsn">
+				<!--模态框-->
+				<div class="modal-shade"></div>
+				<div class="windows">
+					<h1><span>提示</span><span class="toClose"><img src="../image/close.png"></span></h1>
+					<div class="tips">
+						<span>核销成功！</span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>
+<script type="text/javascript" src="../script/jquery.min.js"></script>
+<script src="../script/api.js"></script>
+<script src="../script/Unix.js"></script>
+<script type="text/javascript">
+	apiready = function() {
+		api.addEventListener({
+			name: 'confirm_order'
+		}, function(ret, err) {
+			api.toast({msg:'核销成功'});
+			window.location.reload();
+		});
+		api.setStatusBarStyle({
+			style : 'dark'
+		});
+		$api.addEvt($api.dom('.modal-shade'), 'click', function() {// 点击半透明遮罩时关闭模态框
+			$api.addCls(modal, 'Dsn')
+		})
+		$api.addEvt($api.dom('.toClose'), 'click', function() {// 点击X模态框
+			$api.addCls(modal, 'Dsn')
+		})
+		$(".btn-query").click(function() {// 输入搜索
+			var search = $(this).siblings('input[type = "text"]').val();
+			// 用户输入内容
+			console.log(search);
+			if (!$.trim(search)) {// 如果用户没有输入
+				api.toast({
+					msg : '输入核销码/身份证号/手机号错误',
+					duration : '2000',
+					location : 'bottom'
+				})
+			} else {// 如果有输入,请求后台数据
+				$('.RRR').children().remove()
+				$.ajax({
+					type : 'post',
+					url : url + '/App/Personal/api',
+					dataType : 'json',
+					data : {
+						api_name : 'scenicSearch',
+						token : localStorage.getItem('token'),
+						search : search
+					},
+					success : function(res) {
+						console.log(res)
+						if (res.code == -1) {
+							$('.RRR').html( '<div class="User-info-not-exist">' + '    <p>该用户信息不存在，请重新核实！</p>' + '    <div>' + '        <img src="../image/hqq-bg.png" alt="">' + '    </div>' + '</div>')
+						}else if(res.code == 2){
+							$('.RRR').html( '<div class="User-info-not-exist">' + '    <p>订单已过期/已退票！</p>' + '    <div>' + '        <img src="../image/hqq-bg.png" alt="">' + '    </div>' + '</div>')
+
+						} else {
+							for (i in res.data) {
+								$('.RRR').append('<li data-id="' + res.data[i].id + '" data-status="'+(res.data[i].status==0?'1':res.data[i].status==5?'1':'0')+'">' + '<div>' + '<p>' + res.data[i].name + '</p>' + '<p>有效期至：' + res.data[i].buytime + '</p>' + '<p>订单编号</p>' + '<p>' + res.data[i].oid + '</p>' + '</div>' + '<div>' + '<p style="color:' + (res.data[i].status == 0 ? '#ff8b00' : res.data[i].status == 1 ? '#60b666' : res.data[i].status == 2 ? '#72cdfd' : res.data[i].status == 3 ? '#ff7d78' : '#999') + '">' + (res.data[i].status == 0 ? '未核销' : res.data[i].status == 1 ? '已核销' : res.data[i].status == 2 ? '退票未退款' : res.data[i].status == 3 ? '退票退款' :res.data[i].status == 4 ? '过期':'拒绝退款') + '</p>' + '<p>￥' + res.data[i].payprice + '</p>' + '<p>&times;' + res.data[i].totalnum + '</p>' + '<p>合计：<b>￥' + (res.data[i].totalnum * res.data[i].payprice).toFixed(2) + '</b></p>' + '</div>' + '</li>')
+							}
+						}
+					}
+				})
+			}
+		})
+		//
+		$('.RRR').on('click', 'li', function() {
+			api.openWin({
+				name : 'admin-order_detail',
+				url : 'admin-order_detail.html',
+				pageParam : {
+					token : localStorage.getItem('token'),
+					oid : $(this).data('id'),
+					status: $(this).data('status')
+				}
+			});
+		});
+		
+		//
+		//监听订单详情返回
+api.addEventListener({
+    name: 'Ticket'
+}, function(ret, err) {
+    window.location.reload()
+});
+		
+		
+		
+		
+	}
+</script>

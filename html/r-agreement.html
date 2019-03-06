@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>用户注册协议</title>
+		<meta name="viewport" content="initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+		<link rel="stylesheet" type="text/css" href="../css/r-common.css"/>
+	</head>
+	<style type="text/css">
+  body{
+    background: #fff
+  }
+   header{
+     display: flex;
+     flex-direction: row;
+     justify-content: space-between;
+     align-items: center;
+     width: 90%;
+     padding: 3rem 5% 0;
+     font-size: 1.8rem;
+     height: 4.9rem;
+     border-bottom: 1px solid #dadada
+   }
+   header img{width: 3%;padding: 4% 3%;}
+
+   .main{
+     width: 70%;
+      margin: 5% auto;
+      background: #ebebeb;
+      height: 55%;
+      overflow-y: scroll;
+				-webkit-overflow-scrolling: touch;
+        padding:3% 5%;
+        font-size: 1.2rem;
+        color: #999;
+        border-radius: 6px
+   }
+   .main::-webkit-scrollbar {
+				width: 0;
+				height: 0;
+		}
+    .btn{
+      width: 80%;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+    }
+    .btn button{
+      border: none;
+      outline: none;
+      width: 46%;
+      font-size: 1.5rem;
+      border-radius: 6px;
+      padding: 4% 0;
+      color: #fff;
+    }
+    .btn button:first-of-type{background: #999}
+    .btn button:last-of-type{background: #ff9000}
+	</style>
+	<body>
+    <header>
+        <img src="../image/r-back.png" class="back">
+        <span>用户注册</span>
+        <span></span>
+    </header>
+    <div class="main"></div>
+    <div class="btn">
+      <button class="cancal">取消</button>
+      <button class="confirm">同意，继续下一步</button>
+    </div>
+	</body>
+</html>
+<script src="../script/api.js" type="text/javascript" charset="utf-8"></script>
+<script src="../script/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="../script/fastclick.js" type="text/javascript" charset="utf-8"></script>
+<script src="../script/dlc.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+apiready = function(){
+  api.setStatusBarStyle({
+    style: 'dark'
+  });
+
+	$('.back').click(function(){api.closeWin();})
+  $('.cancal').click(function(){api.closeWin();})
+  $('.confirm').click(function(){
+    api.openWin({
+        name: 'r-register',
+        url: 'r-register.html',
+    });
+  })
+
+	api.showProgress({
+	    style: 'default',
+	    animationType: 'fade',
+	    title: '努力加载中...',
+	    text: '先喝杯茶...',
+	    modal: false
+	});
+
+  $.ajax({
+    type:'POST',
+    url:ajax_url,
+    data:{api_name:'info'},
+    dataType:'json',
+    success:function(data){
+        console.log(data);
+				var str='';
+				data.data.split('\r').forEach(function(p1,p2,p3){
+					if(p2==0){
+						str+='<p style="text-align:center;font-size:15px;">'+p1+'</p>'
+					}else{
+						str+='<p style="text-align:justify-content;font-size:14px;">'+p1+'</p>'
+					}
+				})
+        $('.main').html(str);
+				api.hideProgress();
+    }
+  });
+
+
+
+	}
+</script>

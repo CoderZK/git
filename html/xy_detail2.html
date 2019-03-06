@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+     <meta name="flexible" content="initial-dpr=1"> 
+    <title>门票详情</title>
+    <script src="http://g.tbcdn.cn/mtb/lib-flexible/0.3.4/??flexible_css.js,flexible.js"></script>
+    <link type="text/css" rel="stylesheet" href="../css/xy_main.css" media="all">
+    <link type="text/css" rel="stylesheet" href="../css/flexslider.css" media="all">
+</head>
+<style>
+   header{
+     display: flex;
+     flex-direction: row;
+     justify-content: space-between;
+     align-items: center;
+     padding: 15px 0 0;
+	font-size:18px;
+     border-bottom: 1px solid #dadada
+   }
+   header img{width: 3%;padding: 4% 3%;}
+   header .tit{margin-left:-8%;color:#000}
+</style>
+<body>
+
+        <div class="xy_center">
+            <div class="fixTop">
+                <header>
+        <img src="../image/r-back.png" class="back" onclick="api.closeWin()">
+        <span class="tit">门票详情</span>
+        <span></span>
+    </header>
+                <div class="xy_detail_banner">
+                    <img src="" id="banner">
+                    <div class="innerTop">
+                        <!-- <span id="picnum">共33张图</span> -->
+                    </div>
+                    <div class="innerBottom">
+                        <p><i id="name" style="font-size:17px;"></i><span id="s2" style="margin-left:10px;background-color:rgba(255,144,0,.7);"></span></i><span id="s1" style="margin-left:10px;background-color:rgba(255,144,0,.7);"></span></p>
+                            <p id="time"></p>
+                        </div>
+                    </div>
+                    <div class="xy_line1 bt20 bb20">
+                        <p id="address" class="f15c3" style="background-size:auto .6rem!important;"><span></span></p>
+                    </div>
+                    <div class="xy_line2">
+                        <p class="f15c3">购票须知</p>
+                    </div>
+                </div>
+                <div class="fixContents">
+                    <div class="xy_line_wrap f15c3">
+                        <div class="xy_line3" style="font-weight:bold;">1.购票须知</div>
+                        <div class="xy_line4 ticketknow"></div>
+                        
+                        <div class="xy_line3" style="font-weight:bold;">2.入园方式</div>
+                        <div class="xy_line4 enterway"></div>
+                        
+                        <div class="xy_line3" style="font-weight:bold;">3.费用说明</div>
+                        <div class="xy_line4 costexplain"></div>
+                        
+                        <div class="xy_line3" style="font-weight:bold;">4.退票说明</div>
+                        <div class="xy_line4 refundexplain"></div>
+                        
+                        <div class="xy_line3" style="font-weight:bold;">5.补充说明</div>
+                        <div class="xy_line4 otherexplain"></div>
+                    </div>
+                </div>
+                <div class="xy_line5 fixTop">
+                    <span id="price">￥<i>起</i></span>
+                            <span id="buyTicket">立即购票</span>
+                    </div>
+                </div>
+
+            <script type="text/javascript" src="http://www.efendan.com/public/weixin/js/jquery-2.1.3.min.js"></script>
+            <script type="text/javascript" src="../script/api.js"></script>
+            <script type="text/javascript">
+                apiready = function() {      
+                    var url = 'http://mobile.somochina.com/app/Users/index';
+                    $api.fixStatusBar($api.dom('#xy_header'));
+                    api.setStatusBarStyle({
+                        style: 'dark'
+                    });
+                    $.ajax({
+                        type: 'POST',
+                        url: url,
+                        dataType: 'json',
+                        data: {
+                            api_name: 'Ticket_detail',
+                            token: localStorage.getItem('token'),
+                            id: api.pageParam.id,
+                        },
+                        success: function(res) {
+                            console.log(res);
+                            // $('#picnum').text('共' + api.pageParam.picnum + '张图');
+                            $('#name').text(api.pageParam.name+'+'+res.data.name);
+                            $('#banner').attr('src', res.data.image);
+                            $('#time').html('开放时间：' + api.pageParam.timest + '~' + api.pageParam.timeed + '<span style="width:20px;display:inline-block;"></span>' + api.pageParam.buy_timeed + '前可购今日票');
+                            $('#price').html('￥' + res.data.money + '<i>起</i>');
+                            $('#address').html('' + res.data.location + '<span></span>');
+                            $('#s1').text(api.pageParam.is_cancel==1?'可退票':'不可退票');
+                            $('#s2').text(api.pageParam.is_buytime==1?'可购今日票':'不可购今日票')
+                            $('.ticketknow').text(res.data.ticketknow)
+                            $('.enterway').text(res.data.enterway)
+                            $('.costexplain').text(res.data.costexplain)
+                            $('.refundexplain').text(res.data.refundexplain)
+                            $('.otherexplain').text(res.data.otherexplain)
+
+                            $('#buyTicket').on({
+                                'click': function(e) {
+                                    var that = this;
+                                    api.openWin({
+                                        name: 'xy_detail3',
+                                        url: 'xy_detail3.html',
+                                        pageParam: {
+                                            id:  api.pageParam.id,
+                                            name: res.data.name,
+                                            thum: api.pageParam.banner,
+                                            price: res.data.money,
+                                            pic:api.pageParam.pic,
+                                            timest:api.pageParam.timest,
+                              				timeed:api.pageParam.timeed,
+                                            m_name:api.pageParam.name,
+	                                        is_buytime:api.pageParam.is_buytime,
+	                      					is_cancel:api.pageParam.is_cancel,
+	                      					buy_timeed:api.pageParam.buy_timeed
+                                        }
+                                    });
+                                }
+                            })
+                        },
+                        error: function(err) {
+
+                        }
+                    });
+                };
+            </script>
+</body>
+
+</html>

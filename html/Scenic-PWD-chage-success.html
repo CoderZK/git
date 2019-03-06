@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="flexible" content="initial-dpr=1">
+    <!--需要设置固定dpr时加入 <meta name="flexible" content="initial-dpr=1">-->
+    <!--step-1 引入flexible.script -->
+    <script src="http://g.tbcdn.cn/mtb/lib-flexible/0.3.4/??flexible_css.js,flexible.js"></script>
+    <link rel="stylesheet" href="../css/normalize.css" type="text/css">
+    <link rel="stylesheet" href="../css/mycss.css">
+
+    <title>修改密码</title>
+    <style>
+        .return-tips {
+            margin-top: 100px;
+            display: flex;
+            flex-flow: column nowrap;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .return-tips p {
+            font-size: 0.48rem;
+            padding-bottom: 40px;
+        }
+
+        .return-tips button {
+            font-size: 0.46666666rem;
+            text-decoration: underline;
+            padding: 30px;
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+<body>
+<div class="Scenic-PWD-container">
+    <header class="header" onclick="api.closeWin();">
+        <div class="header-inner">
+            <span>修改密码</span>
+        </div>
+    </header>
+
+    <main class="main">
+
+        <div class="balloon-wrap">
+
+            <div class="balloon">
+                <div class="air-balloon">
+                    <img src="../image/air-balloon.png" alt="花气球">
+                </div>
+                <div class="cloud-1"><img src="../image/cloud-1.png" alt="云"></div>
+                <div class="cloud-2"><img src="../image/cloud-2.png" alt="云"></div>
+                <div class="cloud-3"><img src="../image/cloud-3.png" alt="云"></div>
+            </div>
+        </div>
+
+        <div class="return-tips">
+            <p>密码修改成功,<span class="font-red countDown">3s</span>后返回登录页</p>
+            <button class="FF9000 " id="back">立即返回</button>
+        </div>
+    </main>
+</div>
+</body>
+</html>
+
+<script src="../script/jquery.min.js"></script>
+<script src="../script/api.js"></script>
+<script>
+    apiready = function(){
+    api.setStatusBarStyle({
+    style: 'dark'
+  });
+        var timer = setInterval(function () {
+            var s = parseFloat($('.countDown').html())
+            s--
+            $('.countDown').html(s + "s");
+            if (s <= 0) {
+                clearInterval(timer);
+                timer = null;
+                if(api.pageParam.type=='admin'){
+                	api.closeToWin({
+			            name: 'admin-login'
+			          });
+                }else{
+                	api.closeToWin({
+		            name: 'user-login'
+		          });
+                }
+            }
+        }, 1000);
+
+    };
+</script>

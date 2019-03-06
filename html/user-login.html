@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>供应商登录</title>
+		<meta name="viewport" content="initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+		<link rel="stylesheet" type="text/css" href="../css/r-common.css"/>
+	</head>
+	<style type="text/css">
+   body{
+     background-image: url(../image/r-bg1.png);
+     background: #404040;
+   }
+		.login{
+			width: 90%;
+			padding: 25% 5% 1%;
+		}
+    .login .logo{
+      display: flex;
+      flex-flow: column;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.5rem;
+      color: #fff
+    }
+    .login .logo img{
+      width: 27%;
+      margin-bottom: 2%
+    }
+    .login .logo span{
+      letter-spacing: 0.5rem
+    }
+    .login .logo span b{
+      color: #ff9900
+    }
+		.login p{
+			width: 80%;
+			padding: 4.08% 5%;
+			display: flex;
+			justify-content: space-between;
+			margin: 5% auto;
+			border-radius: 6px;
+      background: rgba(255, 255, 255, 0.3);
+		}
+    .login .forget{
+      color: #fff;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      font-size: 1.5rem;
+      width: 80%;
+      margin:0 auto 10%;
+
+    }
+    .login .forget span:first-of-type{
+      text-decoration:underline
+    }
+		.login input{
+			border: none;
+			outline: none;
+			font-size: 1.5rem;
+      background: initial;
+      color: #fff;
+      width: 100%;
+		}
+    input::-webkit-input-placeholder {color: #fff}
+		.login button{
+			border:none ;
+			outline: none;
+			background: #d8a33e;
+			color: #fff;
+			font-size: 1.4rem;
+			border-radius: 100px;
+			width: 30%;
+			height: 3rem;
+		}
+		.confirm{
+			color: #fff;
+			font-size: 1.8rem;
+			display: block;
+			margin: 0% auto;
+			width: 80%;
+			height: 4.5rem;
+			background: #ff9000;
+			border: none;
+			outline: none;
+			border-radius: 6px;
+      letter-spacing: 15px
+		}
+		.tel{
+			text-decoration: none;
+			color: white;
+			margin-top: 20px;
+			display: block;
+			text-align: center;
+			font-size: 14px;
+		}
+		
+		.back{
+			color: #fff;
+			font-size: 1.8rem;
+			text-align:center;
+			margin-top:5.3rem;
+		}
+	</style>
+	<body>
+		<div class="login">
+      <div class="logo">
+          <img src="../image/r-logo.png" alt="">
+          <span>宿<b>盟</b>网络</span>
+      </div>
+			<p><input type="tel"  maxlength="11" placeholder="用户名" value="" id="tel"/></p>
+			<p><input type="password" placeholder="密码" id="yzm"/></p>
+      <div class="forget">
+				<span class="f" id="forget">忘记密码</span>
+				<span class="register" id="register">注册用户</span>
+			</div>
+		</div>
+		<button class="confirm">登录</button>
+		<a href="tel:0871-12345678" class="tel" id="link_phone">客服热线<span id="phone"></span></a>
+		<div  class="back"> &lt;&lt;返回选择入口</div>
+	</body>
+</html>
+<script src="../script/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="../script/fastclick.js" type="text/javascript" charset="utf-8"></script>
+<script src="../script/dlc.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+  apiready = function(){
+    api.setStatusBarStyle({
+      style: 'light'
+    });
+		$('.back').click(function(){
+			api.closeWin()
+		})
+		$('#register').click(function(){
+			api.openWin({
+          name: 'r-agreement',
+          url: 'r-agreement.html',
+      });
+		})
+		$('#forget').click(function(){
+			api.openWin({
+					name: 'r-forget',
+					url: 'r-forget.html',
+			});
+		})
+$.ajax({
+			type:'POST',
+			url:ajax_url,
+			data:{api_name:'gPhone'},
+			dataType:'json',
+			success:function(res){
+				console.log(res);
+				if(res.code==1){
+					$('#phone').text(res.data?res.data:'暂未开通');
+					$('#link_phone').attr('href',res.data?('tel:'+res.data):'');
+				}else{
+					api.toast({msg:res.msg});
+				}
+			}
+		})
+		$('.confirm').on('click', function() {
+				var tel = $('#tel').val();
+				var yzm = $('#yzm').val();
+				if(tel == '') {
+          api.toast({msg:'请输入手机号码'});
+				}else if(!(/^1[34578]\d{9}$/.test(tel))) {
+					api.toast({msg:'请输入正确的手机号码'});
+				}else if(yzm == ''){
+					api.toast({msg:'请输入密码'});
+				}else {
+					/****************************/
+
+					api.toast({
+					    msg: '正在登录,请稍后...',
+					    duration: 1000,
+					    location: 'bottom'
+					});
+
+					$.ajax({
+						type:'POST',
+						url:ajax_url,
+						data:{api_name:'login',mobile:tel,password:yzm},
+						dataType:'json',
+						success:function(data){
+							//登陆成功后保存token
+								
+								console.log(data);
+								
+								if(data.code==1){
+									localStorage.setItem("token", data.data.token);
+									localStorage.setItem('phonenum',tel);
+									localStorage.setItem('mycity',data.city);
+									api.openSlidLayout ({
+											type: 'left',
+											leftEdge: api.winWidth/2,
+											fixedPane: {
+													name: 'homeFixed',
+													url: 'homeFixed.html',
+													bgColor: 'rgba(0,0,0,.5)',
+													bounces: false,
+													vScrollBarEnabled: false,
+													hScrollBarEnabled: false,
+													pageParam: {
+							                            tel: tel,
+							                            token:data.data.token
+							                        }
+											},
+											slidPane: {
+													name: 'xy_index',
+													url: 'xy_index.html',
+													bgColor: '#fff',
+													bounces: false,
+													vScrollBarEnabled: false,
+													hScrollBarEnabled: false,
+													pageParam: {
+							                            token:data.data.token
+							                        }
+											}
+									}, function(ret, err){
+
+									});
+								}else if(data.code==2){
+									api.openWin({
+									name: 'r-success',
+									url: 'r-success.html',
+										pageParam:{
+											title:'等待审核'
+										}
+									});
+
+								}else if(data.code==3){
+									api.openWin({
+									    name: 'r-renzhen',
+									    url: 'r-renzhen.html',
+										pageParam: {
+				                            token:data.data.token
+				                        }
+									});
+
+								}else if(data.code==4){
+									api.toast({msg: data.msg});
+									setTimeout(function(){
+										api.openWin({
+										    name: 'r-renzhen',
+										    url: 'r-renzhen.html',
+											pageParam: {
+					                            token:data.data.token
+					                        }
+										});
+									},2000)
+									
+
+								}else if(data.code==5){
+									api.toast({msg: data.msg});
+									
+
+								}else{api.toast({msg: data.msg});}
+						}
+					});
+				}
+
+			})
+
+  }
+</script>

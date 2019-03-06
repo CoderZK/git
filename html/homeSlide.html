@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="flexible" content="initial-dpr=1">
+    <title>Title</title>
+    <script src="http://g.tbcdn.cn/mtb/lib-flexible/0.3.4/??flexible_css.js,flexible.js"></script>
+    <link type="text/css" rel="stylesheet" href="../css/xy_main.css" media="all">
+    <link type="text/css" rel="stylesheet" href="../css/flexslider.css" media="all">
+    <link type="text/css" rel="stylesheet" href="../css/swiper.min.css" media="all">
+</head>
+<style>
+.flexslider .slides > li {
+  width: 480px;
+	margin-right: 0px;
+	float: left;
+	display: block;
+}
+.text-overflow{
+	white-space:nowrap;
+	overflow:hidden;
+	text-overflow:ellipsis;
+	
+}
+</style>
+<body>
+    <div class="xy_wrap">
+      <div class="xy_center">
+        <div class="fixTop" style="padding-top:10px;">
+          <div class="t f14c3" id="header">
+              <span class="icon icon_6" id="jsslidel">个人中心</span>
+              <div class="slidedown" id="jsslidedown">
+                  <b id="targetCity">云南昆明</b><i id="jsrotate"></i>
+              </div>
+          </div>
+          <div class="slidedownlist" style="background:#f4f9fd;">
+              <div class="t" style="border-bottom:1px solid #ccc;">
+                  <span class="type1" style="text-decoration: underline;">可查看协议价地点</span>
+                  <span class="type2">其他</span>
+              </div>
+              <div class="b" id="addreslist">
+              </div>
+          </div>
+          <div class="flexslider swiper-container">
+          
+             <div class="swiper-wrapper">
+				            <!-- <div class="swiper-slide"><img src="../img/banner.png"/></div>
+				            <div class="swiper-slide"><img src="../img/banner.png"/></div> -->
+			</div>
+			<div class="swiper-pagination swiper-pagination-white"></div>
+              
+          </div>
+          <div class="search">
+              <div class="searchBox">
+                  <input type="search" name="hid" placeholder="搜索景点门票" autocomplete="off" id="searchValue">
+                  <span class="f15c3" id="search"></span>
+              </div>
+          </div>
+        </div>
+        <div class="fixContents">
+          <div class="xy_list"></div>
+        </div>
+      </div>
+    </div>
+
+    <script type="text/javascript" src="../script/jquery.min.js"></script>
+    <script type="text/javascript" src="../script/jquery.flexslider-min.js"></script>
+    <script type="text/javascript" src="../script/api.js"></script>
+    <script src="../script/Unix.js" type="text/javascript" charset="utf-8"></script>
+    <script type="text/javascript" src="../script/swiper.min.js"></script>
+    <script type="text/javascript">
+    var slidedownlist = document.querySelector('.slidedownlist'),jsrotate = document.querySelector('#jsrotate');
+     	var swiper    
+     	
+ 	swiper = new Swiper('.swiper-container', {
+			pagination: '.swiper-pagination',
+			autoplay: 3500,
+			slidesPerView: 1,
+			paginationClickable: true,
+			spaceBetween: 5,
+			loop:true
+		});
+        apiready = function() {
+
+         $(".type1").click(function(){ 
+         $("#addreslist").html('');
+            $.ajax({
+                type: 'POST',
+                url: url,
+                dataType: 'json',
+                data: {
+                    api_name: 'Addresslist',
+                    token: localStorage.getItem('token'),
+                     type:1
+                },
+                success: function(res) {
+                  console.log(res);
+                    var str = '';
+                    if(res.data.length>0){
+						$('#addreslist').prepend('<span style="color:#ff9000;">' + res.city + '(注册地)</span>')
+						for(i in res.data){
+							$('#addreslist').append('<span>' +res.data[i]+ '</span>')
+						}
+                      $('#addreslist span').on({'click':function() {
+                          $("#targetCity").text($(this).text().replace(/\(注册地\)/g,''));
+                          //if($(this).text()=='(注册地)'){
+                            console.log($(this).text().replace(/\(注册地\)/g,''));
+                            getDate($(this).text().replace(/\(注册地\)/g,''));
+                          //}else{
+                            //getDate($(this).text());
+                         // }
+//                        $(this).css('color','#ff9000');
+//                        $(this).siblings().css('color','#000000');
+                        	slidedownlist.style.display = 'none';
+                        	jsrotate.style.transform = 'rotateZ(0deg)';
+                        }
+                      })
+                    }
+                },
+                error: function(err) {
+                }
+            });
+        
+        })
+        $(".type2").click(function(){
+       	$("#addreslist").html('');
+        	 $.ajax({
+                type: 'POST',
+                url: url,
+                dataType: 'json',
+                data: {
+                    api_name: 'Addresslist',
+                    token: localStorage.getItem('token'),
+                     type:2
+                },
+                success: function(res) {
+                  console.log(res);
+                    var str = '';
+                    if(res.data.length>0){
+					
+					$('#addreslist').prepend('<span style="color:#ff9000;">' + res.city + '(注册地)</span>')
+						for(i in res.data){
+							$('#addreslist').append('<span>' +res.data[i]+ '</span>')
+						}
+                      $('#addreslist span').on({'click':function() {
+                          $("#targetCity").text($(this).text().replace(/\(注册地\)/g,''));
+                          //if($(this).text()=='(注册地)'){
+                            console.log($(this).text().replace(/\(注册地\)/g,''));
+                            getDate($(this).text().replace(/\(注册地\)/g,''));
+                          //}else{
+                            //getDate($(this).text());
+                         // }
+//                        $(this).css('color','#ff9000');
+//                        $(this).siblings().css('color','#000000');
+                        	slidedownlist.style.display = 'none';
+                        	jsrotate.style.transform = 'rotateZ(0deg)';
+                        }
+                      })
+                    }
+                },
+                error: function(err) {
+                }
+            });
+        })
+            var url = 'http://mobile.somochina.com/app/Users/index',
+                city = localStorage.getItem('city');
+                
+            $api.fixStatusBar($api.dom('#header'));
+            var headerPos = $api.offset($api.dom('#header'));
+            api.setStatusBarStyle({
+                style: 'dark'
+            });
+
+            $('#jsslidel').on({
+                'click': function() {
+                api.sendEvent({
+				    name: 'myEvent',
+				   
+				});
+                    api.openSlidPane({
+                        type: 'left'
+                    });
+                }
+            });
+			api.lockSlidPane();//锁住 SlidPane
+			
+            getDate(localStorage.getItem('mycity'));
+			$('.xy_list').on('click','.item', function() {
+                      var that = this;
+                      api.openWin({
+                          name: 'xy_detail',
+                          url: 'xy_detail.html',
+                          pageParam: {
+                              id: $(this).attr('data-id'),
+                              timest:$(this).attr('data-timest'),
+                              timeed:$(this).attr('data-timeed'),
+                              buy_timeed:$(this).attr('data-buy_timeed'),
+                              name:$(this).attr('data-name'),
+                              pic:$(this).attr('data-pic'),
+                              is_buytime:$(this).attr('data-is_buytime'),
+		                      is_cancel:$(this).attr('data-is_cancel')
+                          }
+                      });
+                  })
+            $.ajax({
+                type: 'POST',
+                url: url,
+                dataType: 'json',
+                data: {
+                    api_name: 'Addresslist',
+                    token: localStorage.getItem('token'),
+                    type:1
+                },
+                success: function(res) {
+                  	console.log(res);
+                  	$('#targetCity').text(res.city);
+                    var str = '';
+                    if(res.data.length>0){
+
+						$('#addreslist').prepend('<span style="color:#ff9000;">' + res.city + '(注册地)</span>')
+						for(i in res.data){
+							$('#addreslist').append('<span>' +res.data[i]+ '</span>')
+						}
+                      $('#addreslist span').on({'click':function() {
+                          $("#targetCity").text($(this).text().replace(/\(注册地\)/g,''));
+                          //if($(this).text()=='(注册地)'){
+                            console.log($(this).text().replace(/\(注册地\)/g,''));
+                            getDate($(this).text().replace(/\(注册地\)/g,''));
+                          //}else{
+                            //getDate($(this).text());
+                         // }
+//                        $(this).css('color','#ff9000');
+//                        $(this).siblings().css('color','#000000');
+                        	slidedownlist.style.display = 'none';
+                        	jsrotate.style.transform = 'rotateZ(0deg)';
+                        }
+                      })
+                    }
+                },
+                error: function(err) {
+                }
+            });
+            function getDate(_city) {
+              
+              $.ajax({
+                  type: 'POST',
+                  url: url,
+                  dataType: 'json',
+                  data: {
+                      api_name: 'Reservelist',
+                      token: localStorage.getItem('token'),
+                      city:_city
+                  },
+                  success: function(res) {
+                      console.log(res);
+                      var str = '',
+                          str1 = '';
+                      if (res.data.shoplist.length == 0) {
+                          $('.xy_list').html('<p style="color: black;font-size: 15px;line-height: 300px;text-align: center;">暂时没有数据</p>');
+                      } else {
+                          res.data.shoplist.forEach(function(p1, p2, p3) {
+                              str += '<div class="item" data-buy_timeed="'+p1.buy_timeed+'" data-id="' + p1.id + '" data-timeed="'+p1.timeed+'" data-timest="'+p1.timest+'" data-name="'+p1.name+'" data-pic="'+p1.indexalbum+'" data-is_cancel="'+p1.is_cancel+'" data-is_buytime="'+p1.is_buytime+'"><img style="border-radius:5px;" src="' + p1.indexalbum + '"><div class="item_r" style="width:70%"><p class="f14c3 text-overflow" style="display: flex;justify-content: space-between;width:100%"><span class="text-overflow" style="width: 50%;">' + p1.name + '</span><span class="f24 cff7d78 f-r" >￥'+p1.money+'<i class=f13c3>起</i></span></p><p>营业时间：' + p1.timest +'~' + p1.timeed +
+                                  '</p><div class="item_r_b"><span>'+(p1.is_buytime==1?'可购今日票':'不可购今日票')+'</span><span>'+(p1.is_cancel==1?'可退票':'不可退票')+'</span><i class="f13c3 detail">购买须知>></i></div></div></div>';
+                          });
+                          $('.xy_list').html(str);
+                      }
+                      if (res.data.bannerlist.length > 0) {
+	                      for(i in res.data.bannerlist){
+	                    	 swiper.appendSlide("<div class='swiper-slide'><img style='width:100%;height:4.9rem' src="+res.data.bannerlist[i].image+"></div>")
+	                      }
+                      }
+
+                  },
+                  error: function(err) {
+
+                  }
+              });
+            }
+
+
+            
+            
+            
+            
+            
+            
+            //搜索
+           	$('#search').click(function(){
+           	if($('#searchValue').val()==''){
+           		api.toast({msg:'搜索不能为空'});
+           	}else{
+           	$('.xy_list').children().remove()
+           		$.ajax({
+	                type: 'POST',
+	                url: url,
+	                dataType: 'json',
+	                data: {
+	                    api_name: 'searchShop',
+	                    token: localStorage.getItem('token'),
+	                    keyword:$('#searchValue').val()
+	                },
+	                success: function(res) {
+	                  console.log(res);
+	                    var str = '',
+                          str1 = '';
+                      if (res.data.length == 0) {
+                          $('.xy_list').html('<p style="color: black;font-size: 15px;line-height: 300px;text-align: center;">'+res.msg+'</p>');
+                      } else {
+                          res.data.forEach(function(p1, p2, p3) {
+                              str += '<div class="item" data-buy_timeed="'+p1.buy_timeed+'" data-id="' + p1.id + '" data-timeed="'+p1.timeed+'" data-timest="'+p1.timest+'" data-name="'+p1.name+'" data-pic="'+p1.indexalbum+'" data-is_cancel="'+p1.is_cancel+'" data-is_buytime=="'+p1.is_buytime+'"><img style="border-radius:5px;" src="' + p1.indexalbum + '"><div class="item_r"><p class="f14c3 text-overflow" style="display: flex;justify-content: space-between"><span class="text-overflow" style="flex:4;width: 100%;">' + p1.name + '</span><span class="f24 cff7d78 f-r" >￥90<i class=f13c3>起</i></span></p><p>营业时间：' + p1.timest +'~' + p1.timeed +
+                                  '</p><div class="item_r_b"><span>'+(p1.is_buytime==1?'可购今日票':'不可购今日票')+'</span><span>'+(p1.is_cancel==1?'可退票':'不可退票')+'</span><i class="f13c3 detail">购买须知>></i></div></div></div>';
+                          });
+                          $('.xy_list').html(str);
+                      }
+                       $('.item').on({
+		                  'click': function(e) {
+		                      var that = this;
+		                      api.openWin({
+		                          name: 'xy_detail',
+		                          url: 'xy_detail.html',
+		                          pageParam: {
+		                              id: $(this).attr('data-id'),
+		                              timest:$(this).attr('data-timest'),
+		                              buy_timeed:$(this).attr('data-buy_timeed'),
+		                              timeed:$(this).attr('data-timeed'),
+		                              name:$(this).attr('data-name'),
+		                              pic:$(this).attr('data-pic'),
+		                              is_buytime:$(this).attr('data-is_buytime'),
+		                              is_cancel:$(this).attr('data-is_cancel')
+		                          }
+		                      });
+		                  }
+		              })
+	                    
+	                },
+	                error: function(err) {
+	                }
+	            });
+	            
+           	}
+				
+           	})
+            
+            
+            
+            
+        };
+
+
+
+
+        document.querySelector('#jsslidedown').addEventListener('click', function() {
+            if (window.getComputedStyle(slidedownlist, null).getPropertyValue('display') == 'none') {
+                slidedownlist.style.display = 'block';
+                jsrotate.style.transform = 'rotateZ(180deg)';
+            } else {
+                slidedownlist.style.display = 'none';
+                jsrotate.style.transform = 'rotateZ(0deg)';
+            }
+
+        }, false);
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,67 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="flexible" content="initial-dpr=1">
+    <title>Title</title>
+    <script src="http://g.tbcdn.cn/mtb/lib-flexible/0.3.4/??flexible_css.js,flexible.js"></script>
+    <link type="text/css" rel="stylesheet" href="../css/xy_main.css" media="all">
+</head>
+<body>
+<div class="xy_wrap">
+    <div class="xy_contents">
+        <div class="xy_contents_main">
+            <div class="xy_header" id="header">
+                <span class="title">订单详情</span>
+            </div>
+            <div class="buyticketsus">
+                <p><span>预定成功</span></p>
+                <p><i id="name"></i></p>
+                <p>门票单价：￥<i id="price"></i></p>
+                <p>预定数量：<i id="num"></i>张</p>
+                <p>订单总价￥<i id="totalmoney"></i></p>
+                <p>
+                    <span class="detail">查看订单详情</span>
+                    <span class="home">返回首页</span>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="../script/jquery.min.js"></script>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript">
+
+apiready = function() {
+    var url = 'http://mobile.somochina.com/app/Users/index';
+    $api.fixStatusBar($api.dom('#header'));
+    api.setStatusBarStyle({
+      style: 'dark'
+  });
+      api.setStatusBarStyle = 'dark';
+    $('#name').text(api.pageParam.name);
+    $('#price').text(api.pageParam.price);
+    $('#num').text(api.pageParam.num);
+    $('#totalmoney').text(api.pageParam.num*api.pageParam.price);
+    $('.detail').click(function(){
+    	api.openWin({
+	       name: 'xy_orderdetail',
+	       url: 'xy_orderdetail.html',
+	       pageParam:{
+	       		id:api.pageParam.id,
+	       		oid:api.pageParam.oid,
+	       		name:api.pageParam.name,
+	       		 m_name:api.pageParam.m_name
+	       }
+	   });
+    })
+    
+    $('.home').click(function(){
+    	api.closeToWin({name: 'xy_index'});
+    })
+    
+};
+
+</script>
+</body>
+</html>

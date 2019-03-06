@@ -1,0 +1,383 @@
+<!--<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <script src="http://g.tbcdn.cn/mtb/lib-flexible/0.3.4/??flexible_css.js,flexible.js"></script>
+    <link rel="stylesheet" href="../css/normalize.css" type="text/css">
+    <link rel="stylesheet" href="../css/mycss.css">
+    <link rel="stylesheet" href="../css/xy_main.css">
+    <title>订单详情</title>
+</head>
+<style>
+   header{
+     display: flex;
+     flex-direction: row;
+     justify-content: space-between;
+     align-items: center;
+     width: 100%;
+     padding: 25px 0 0;
+     font-size: 18px;
+     height: 45px;
+     border-bottom: 1px solid #dadada
+   }
+   .index-container .main .article {
+		font-size: 16px;
+		padding: 3% 5%;
+
+	}
+	.detail li{margin-top:3%}
+  i{
+    font-style: normal;
+  }
+
+  .refused{
+    display: none;
+  }
+</style>
+<body>
+<div class="index-container">
+  <div id="xy_header">
+    <span onclick="$api.goback()"></span>
+    <span>订单详情</span>
+</div>
+
+    <main class="main">
+        <article class="article">
+            <ul class="detail">
+                <li style="display:flex;"><span class="fw500 fs30" style="display:inline-block;">门票名称：</span><span class="fs30" id="name" style="flex:1;line-height:1.4;"></span></li>
+                <li><span>使用期限：</span><span id="usetime"></span></li>
+                <li><span>门票时限：</span><span id="limittime"></span></li>
+                <li><span>购买单价：</span><span id="sigleprice"></span></li>
+                <li><span>协议价格：</span><span id="protocalprice"></span></li>
+                <li><span>购买数量：</span><span id="nums"></span></li>
+                <li><span>合计金额：</span><span id="totalprice"></span></li>
+                <li><span>合计利润：</span><span id="totalprice2"></span></li>
+                <li style="display:flex;"><span style="display:inline-block;">入园地址：</span><span id="address" style="flex:1;line-height:1.4;"></span></li>
+                <li><span>入园方式：</span><span id="innerway"></span></li>
+
+                <li><span>游客姓名：</span><span id="tourname"></span></li>
+                <li><span>身份证号：</span><span id="idcard"></span></li>
+                <li><span>手机号码：</span><span id="phonenum"></span></li>
+                <li><span>出票时间：</span><span id="outtime"></span></li>
+                <li><span>门票码券：</span><span class="fw600 .fs30" id="ticketid"></span></li>
+                <li><span>订单编号：</span><span id="orderid"></span></li>
+                <li><span>订单状态：</span><span id="orderstatus"><i></i></span></li>
+
+
+                <li class="refused"><span>退票时间：</span><span id="refusedtime"></span></li>
+                <li class="refused"><span>退票原因：</span><span style="color:#ff7d78;" id="refusedreason"></span></li>
+                <li class="refused"><span>退票状态：</span><span id="refusedstatus"></span></li>
+                <li class="refused"><span>退款账户：</span><span id="refusedcount"><i></i></span></li>
+                <li class="refused kuanxiang" style="color:#eee;"><span>退款账户：</span><span>(没有收到款项？请联系客服)</span></li>
+            </ul>
+            <p style="color:#999;" class="kuanxiang2">退票须知：退票应在门票时限截止时间提前至少一个小时进行申请，过期将无法进行退票，所造成的损失由购票承担</p>
+
+        </article>
+
+        <button class="btn FF9000 fs30"><span id="surectrl">申请退票</span></button>
+    </main>
+</div>
+
+<script type="text/javascript" src="../script/jquery.min.js"></script>
+<script src="../script/Unix.js" type="text/javascript" charset="utf-8"></script>
+<script src="../script/api.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+    apiready = function() {
+        var url = 'http://mobile.somochina.com/app/Users/index';
+        $api.fixStatusBar($api.dom('#xy_header'));
+
+        api.setStatusBarStyle({
+          style: 'dark'
+      });
+        console.log(api.pageParam.id);
+        $.ajax({
+            type: 'POST',
+            url: url,
+            dataType: 'json',
+            data: {
+                api_name: 'OrdersDetail',
+                token: localStorage.getItem('token'),
+                orderid: api.pageParam.id
+            },
+            success: function(res) {
+              console.log(res);
+                $('#name').text(res.data.name);
+                $('#usetime').text(date('Y-m-d H:i',res.data.appointment_date));
+                $('#limittime').text(date('Y-m-d H:i',res.data.classtimeed));
+                $('#sigleprice').text('￥'+res.data.payprice);
+                $('#protocalprice').text('￥'+res.data.price);
+                $('#nums').text(res.data.totalnum);
+                $('#totalprice').text('￥'+res.data.totalprice);
+                $('#totalprice2').text('￥'+res.data.totalprofit);
+                $('#address').text(res.data.location);
+                $('#innerway').text(res.data.way);
+                $('#tourname').text(res.data.vipname);
+                $('#idcard').text(res.data.idcard);
+                $('#phonenum').text(res.data.vipmobile);
+                $('#outtime').text(date('Y-m-d H:i',res.data.ctime));
+                $('#ticketid').text(res.data.paytype);
+                $('#orderid').text(res.data.oid);
+                $('#orderstatus').html(res.data.status == '0' ? '<i style="color:#FF9000;">待核销</i>' : (res.data.status == '1' ? '<i style="color:#60b666;">已核销</i>' : (res.data.status == '2' ?
+                    '<i style="color:#ff7d78;">已退票未退款</i>' : (res.data.status==3?'<i style="color:#ff7d78;">退票退款</i>':(res.data.status==4?'<i style="color:#999;">过期</i>':'<i style="color:#ff7d78;">拒绝退款</i>')))));
+                if (res.data.status != '0') {
+                    $('#surectrl').css({'display':'none'});
+                }
+
+                if(res.data.status==3){
+                  $('.refused').css('display','block');
+                  $('.kuanxiang2').css('display','none');
+                  // $('#refusedtime').text(res.data.)
+                }
+            },
+            error: function(err) {
+
+            }
+        });
+
+        function formatDate(now, ff) {
+            var year = now.getFullYear();
+            var month = now.getMonth() + 1 < 10 ? '0' + (now.getMonth() + 1) : now.getMonth() + 1;
+            var date = now.getDate() < 10 ? '0' + now.getDate() : now.getDate();
+            var hour = now.getHours() < 10 ? '0' + now.getHours() : now.getHours();
+            var minute = now.getMinutes() < 10 ? '0' + now.getMinutes() : now.getMinutes();
+            var second = now.getSeconds() < 10 ? '0' + now.getSeconds() : now.getSeconds();
+            if (ff == 'Y-m-d') {
+                return year + "-" + month + "-" + date;
+            } else if (ff == 'Y-m-d H:i:s') {
+                return year + "-" + month + "-" + date + " " + hour + ":" + minute + ":" + second;
+            } else if (ff == 'H:i') {
+                return hour + ":" + minute;
+            }
+        }
+
+        $('#surectrl').on({
+            'click': function(e) {
+                api.openWin({
+                    name: 'xy_orderdetailtui',
+                    url: 'xy_orderdetailtui.html',
+                    pageParam: ({
+                        id: api.pageParam.id
+                    })
+                });
+
+            }
+        })
+    };
+</script>
+</body>
+
+</html>-->
+
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>用户注册协议</title>
+		<meta name="viewport" content="initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+		<link rel="stylesheet" type="text/css" href="../css/r-common.css"/>
+	</head>
+	<style type="text/css">
+		  body{
+		    background: #fff
+		  }
+		   header{
+		     display: flex;
+		     flex-direction: row;
+		     justify-content: space-between;
+		     align-items: center;
+		     width: 100%;
+		     padding: 25px 0 0;
+		     font-size: 18px;
+		     height: 45px;
+		     border-bottom: 1px solid #dadada
+		   }
+		   header img{width: 3%;padding: 2% 3%;}
+		.red{color: #ff7d78;}
+		.orange{color: #ff9000;}
+		 #main{
+		 	padding: 3% 10% 3%;
+		 	font-size:1.4rem;
+		 	border-bottom:1px solid #eee
+		 }
+		 #main p{margin-bottom: 2%;}
+		 #main p:first-of-type{font-size:1.6rem}
+		 #type{
+			background-color: #ebebeb;
+			border-radius: 6px;
+			padding: 1.5%;
+			text-align: center;
+			width: 35%;
+			color: #666;
+			display: inline-block;
+		}
+		#main input{
+			border: 0;
+			outline: 0;
+			background-color: #ebebeb;
+			border-radius: 6px;
+			padding: 1.5%;
+			text-align: center;
+			width: 50%;
+			color: #666;
+			font-size: 1.52rem;
+			margin-left:5%
+		}
+		.refuned{
+			border: none;
+			width: 90%;
+			padding: 3% 0;
+			display: block;
+			margin: 0 auto;
+			border-radius: 8px;
+			background: #ff9000;
+			font-size: 1.8rem;
+			color: #fff;
+			letter-spacing: 5px;
+			margin-top: 3%;
+		}
+		.ali{display: flex;}
+		.ali span:last-of-type{display: flex;flex-direction: column;}
+		.ali span:last-of-type b:last-of-type{color: #999;font-size: 1.2rem;}
+	</style>
+	<body>
+	    <header>
+	        <img src="../image/r-back.png" class="back">
+	        <span>订单详情</span>
+	        <span></span>
+	    </header>
+    	<div id="main">
+			
+    	</div>
+	</body>
+</html>
+<script src="../script/api.js" type="text/javascript" charset="utf-8"></script>
+<script src="../script/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="../script/fastclick.js" type="text/javascript" charset="utf-8"></script>
+<script src="../script/dlc.js" type="text/javascript" charset="utf-8"></script>
+<script src="../script/Unix.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+apiready = function(){
+//2017-9-30
+function dat(ddd){
+var a = new Array("日", "一", "二", "三", "四", "五", "六");  
+var week = new Date(ddd).getDay(); 
+var str = "周"+ a[week];  
+return str
+}
+  api.setStatusBarStyle({
+    style: 'dark'
+  });
+	$('.back').click(function(){api.closeWin();});
+	var m_name = api.pageParam.m_name
+	//alert(api.pageParam.id);
+  $.ajax({
+    type:'POST',
+    url:xy_url,
+    data:{api_name:'OrdersDetail',token:localStorage.getItem('token'),orderid:api.pageParam.id},
+    dataType:'json',
+    success:function(data){
+        console.log(data);
+        //alert(JSON.stringify(data));
+        $('#main').append(
+        	'<p>门票名称：'+m_name+'+'+data.data.name+'</p>'+
+        	'<p>使用期限：'+data.data.buytime+' '+dat(data.data.buytime)+'</p>'+
+        	'<p>门票时限：'+data.data.buytime+' '+data.data.timeed+'之前</p>'+
+        	'<p>购买单价：￥'+data.data.money+'</p>'+
+        	'<p>协议价格：￥'+data.data.price+'</p>'+
+        	'<p>购买数量：'+data.data.totalnum+'张</p>'+
+        	'<p>合计金额：￥'+data.data.totalprice+'</p>'+
+        	'<p>合计利润：￥'+data.data.profit+'</p>'+
+        	'<p>入园地址：'+data.data.location+'</p>'+
+        	'<p>入园方式：'+data.data.enterway+'</p>'+
+    		'<p>游客姓名：'+data.data.vipname+'</p>'+
+    		'<p>身份证号：'+data.data.idcard+'</p>'+
+    		'<p>手机号码：'+data.data.vipmobile+'</p>'+
+    		'<p>出票时间：'+date('Y-m-d H:i',data.data.ctime)+'</p>'+
+    		'<p>门票码券：'+data.data.checkcode+'</p>'+
+    		'<p>订单编号：'+data.data.oid+'</p>'+
+    		'<p>订单状态：<span style="color:'+(data.data.status==0?'#ff8b00':data.data.status==1?'#60b666':data.data.status==2?'#ff8b00':data.data.status==3?'#ff8b00':'#999')+'">'+(data.data.status==0?'待核销':data.data.status==1?'已核销':data.data.status==2?'退票未退款':data.data.status==3?'退票退款':data.data.status==4?'过期':'拒绝退款')+'</span></p>'+
+    		
+    		(data.data.status==2?
+    		'<p>退票时间：'+date('Y-m-d H:i',data.data.canceltime)+'</p><p>退票原因：'+data.data.msg+'</p><p>退款状态：<span class="color:#60b666">退票未退款</span></p>'
+    		:data.data.status==3?'<p>退票时间：'+date('Y-m-d H:i',data.data.canceltime)+'</p><p>退票原因：'+data.data.msg+'</p><p>退款状态：<span class="color:#60b666">退票退款</span></p><p class="ali"><span>退款账户：</span><span id="tel"><b>支付宝  '+data.data.alipay+'</b><b>(没有收到款项?请联系客服)</b></span></p>'
+    		:data.data.status==5?'<p>退票时间：'+date('Y-m-d H:i',data.data.canceltime)+'</p><p>退票原因：'+data.data.msg+'</p><p>退款状态：<span class="color:#60b666">拒绝退款</span></p>':'')                                          
+    		
+    		
+    		)
+    	$('#main').after(data.data.status==0?
+    	('<p style="text-align:center;color:#999;font-size: 1.4rem;padding: 3% 10% 0;">退票须知：退票应在门票时限截止时间提前至少一个小时进行 申请，过期将无法进行退票，所造成的损失由购票人承担</p>'+
+    	'<p class="cancal" style="text-align: center;color: #ff9000;font-size: 1.8rem;text-decoration: underline;">申请退票</p>'):data.data.status==1?('<p style="text-align:center;color:#999;font-size: 1.4rem;padding: 3% 10% 0;">退票须知：退票应在门票时限截止时间提前至少一个小时进行 申请，过期将无法进行退票，所造成的损失由购票人承担</p>'+
+    	'<p class="cancal" style="text-align: center;color: #ff9000;font-size: 1.8rem;text-decoration: underline;">申请退票</p>'):''
+    	
+    	);
+    	$('.cancal').click(function(){
+			$('#main').nextAll().remove()
+			$('#main').append('<span id="type">请选择</span>')
+			$('#main').after('<button class="refuned">提交退票申请</button>')
+			$('#type').click(function(){
+				 api.actionSheet({
+	                title: '退票原因',
+	                cancelTitle: '取消',
+	                buttons: ['不想去了', '时间冲突','其他(请填写)']
+	            }, function(ret, err) {
+	                console.log(ret)
+	                $('#type_data').remove();
+	                var index = ret.buttonIndex;
+	                if(index == 1){
+	                    $('#type').text('不想去了');
+	                }else if(index == 2){
+	                    $('#type').text('时间冲突');
+	                }else if(index == 3){
+	                    $('#type').text('其他(请填写)');
+	                    $('#type').after('<input type="text" id="type_data" placeholder="请填写">');
+	                }else{}
+	            });
+			});
+			//
+			$('#tel').click(function(){
+				api.call({
+				    type: 'tel_prompt',
+				    number: '0871-12345678'
+				});
+			});
+			//
+			$('.refuned').click(function(){
+				if($('#type').text()=='请选择' || $('#type_data').val()==''){
+					api.toast({msg:'请填写退票原因'});
+				}else{
+					api.confirm({
+					    msg: '是否退票',
+					    buttons: ['确定', '取消']
+					}, function(ret, err) {
+					    var index = ret.buttonIndex;
+					    if(index==1){
+					    	 $.ajax({
+							    type:'POST',
+							    url:xy_url,
+							    data:{api_name:'cancelTicket',token:localStorage.getItem('token'),orderid:api.pageParam.id,msg:($('#type').text()=='其他(请填写)'?'其他:'+$('#type_data').val():$('#type').text())},
+							    dataType:'json',
+							    success:function(res){
+							    	if(res.code==1){
+							    	api.sendEvent({
+									    name: 'Ticket',
+									});
+							    		api.toast({msg:res.msg});
+							    		setTimeout(function(){api.closeWin()},1000)
+							    	}else{api.toast({msg:res.msg});}
+							    }
+							 })
+					    }
+					});
+				}
+			})
+		})
+    },
+	  error:function(err){
+		  alert(JSON.stringify(err));
+	  }
+  });
+}
+</script>
+

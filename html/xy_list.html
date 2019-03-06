@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>订单列表</title>
+		<meta name="viewport" content="initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+		<link rel="stylesheet" type="text/css" href="../css/r-common.css"/>
+	</head>
+	<style type="text/css">
+  body{
+    background: #fff
+  }
+   header{
+     display: flex;
+     flex-direction: row;
+     justify-content: space-between;
+     align-items: center;
+     padding: 1.5rem 3% 0;
+     font-size: 1.8rem;
+     border-bottom: 1px solid #dadada
+   }
+   header img{width: 3%;padding: 4% 3% 4% 0;}
+   header .tit{margin-left: 10%}
+   header .date{
+   	padding: 1% 6% 1% 0;
+   	background-image:url(../image/icon_7.png);
+   	background-position:right center;
+	background-repeat: no-repeat;
+	background-size: 18%;
+   }
+	#main{
+		font-size:1.5rem;
+		width:94%;
+		padding:2% 3%;
+		border-bottom:1px solid #ccc
+	}
+	#main .tj{
+		display: flex;
+     	flex-direction: row;
+     	justify-content: space-between;
+     	align-items: center;
+	}
+	#main .tj p{
+		display: flex;
+     	flex-direction: column;
+     	justify-content: center;
+     	width: 50%;
+	}
+	#main .tj p span:last-of-type{margin-top:2%}
+	#main .tel{
+		font-size:1.1rem;
+		color:#999;
+		text-align:right;
+		margin-top:1%;
+    	
+
+	}
+		/**/
+		.menu{
+			width: 90%;
+			padding: 0 5%;
+		}
+		.menu div{
+			width: 100%;
+			padding: 2% 0;
+			border-bottom: 1px solid #eee;
+			font-size: 1.5rem;
+			display: flex;
+			justify-content: space-around;
+			color: #999;
+		}
+		.menu div span{
+			padding: 1% 0;
+		}
+		.menu .active{
+			color: #333;
+			border-bottom: 2px solid #FF9000;
+		}
+		.list{
+			flex: 1;
+			overflow-y: scroll;
+			-webkit-overflow-scrolling: touch;
+			width: 90%;
+			padding: 0 5%;
+		}
+		.list::-webkit-scrollbar {
+			width: 0;
+			height: 0;
+		}
+		.list li{
+			width: 98%;
+			padding: 2% 1%;
+			border-bottom: 1px solid #eee;
+			display: flex;
+			justify-content: space-between;
+		}
+		.list li div{
+			display: flex;
+			flex-direction: column;
+			justify-content: flex-end;
+		}
+		.list li div span{width: 100%;}
+		.list li .r{text-align: right;width: 30%;}
+		.list li .l{width: 70%;}
+		.list li .l span:nth-of-type(2){margin-top: 2%;color: #777;}
+		.list li .l span:nth-of-type(3){margin-bottom: 2%;color: #777;}
+		.red{color: #ff7d78;}
+		.orange{color: #ff9000;}
+		.green{color: #60b666;}
+		.gray{color: #999;}
+		.f15{font-size: 1.5rem;}
+		.f14{font-size: 1.4rem;}
+		.f13{font-size: 1.3rem;}
+		
+		/**/
+		.b{
+			width: 90%;
+			padding: 3% 5%;
+			border-bottom: 5px solid #eee;
+			font-size: 1.5rem;
+		}
+		.b .ti{
+			padding: 0 0 1%;
+			border-bottom: 1px solid #eee;
+			text-align: center;
+		}
+		.b .p{
+			display: flex;
+			justify-content: space-around;
+			
+		}
+		.b .p p{
+			flex: 1;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			padding-top: 1%;
+		}
+		.b .p p span:first-of-type{margin-bottom: 1%;}
+		
+		/**/
+		.m{
+			width: 90%;
+			padding: 3% 5% 1%;
+			border-bottom: 5px solid #eee;
+		}
+		.m p{
+			margin-bottom:2% ;
+			font-size: 1.5rem;
+		}
+		.m p:last-of-type{text-align: right;font-size: 1.2rem;}
+		/**/
+	</style>
+	<body>
+    <header>
+        <img src="../image/r-back.png" class="back" onclick="api.closeWin()">
+        <span class="tit">订单列表</span>
+        <span class="date"></span>
+    </header>
+    <div id="main">
+    	<div class="tj">
+    		<p>
+    			<span>订单数量：<b class="number">0</b>单</span>
+    			<span>结算状态：<b class="status">待结算</b></span>
+    		</p>
+    		<p>
+    			<span>当月排名：<b class="rank"></b></span>
+    			<span>利润合计：￥<b class="profit">0.00</b></span>
+    		</p>
+    	</div>
+    	<div class="tel">（每月的<b>1号</b>系统自动结算，如出现结算问题请联系客服）</div>
+    </div>
+    <div class="b">
+				<div class="ti"></div>
+				<div class="p">
+					<p>
+						<span>核销订单</span>
+						<span class="readytotal">￥0.00</span>
+					</p>
+					<p>
+						<span>过期订单</span>
+						<span class="overtotal">￥0.00</span>
+					</p>
+					<p>
+						<span>退款订单</span>
+						<span class="refundtotal">￥0.00</span>
+					</p>
+					<p>
+						<span>合计</span>
+						<span class="red total">￥0.00</span>
+					</p>
+				</div>
+			</div>
+			<div class="m">
+				<p>结算时间：<span class="settle_time">暂无</span></p>
+				<p>结算账户：<span class="alipay">暂无</span></p>
+				<p class="gray tel">（没有收到退款？请联系客服)</p>
+			</div>
+    <nav class="menu">
+		<div>
+			<span class="active">核销订单(<b class="num_a">0</b>)</span>
+			<span>过期订单(<b class="num_b">0</b>)</span>
+			<span>退款订单(<b class="num_c">0</b>)</span>
+		</div>
+	</nav>
+	<ul class="list">
+		<!--<li>
+			<div class="l">
+				<span class="f15">环球亲子水世界担任成人票</span>
+				<span class="f13">出票时间：2017-07-09  18:00</span>
+				<span class="f13">核销时间：2017-07-10  18:00</span>
+				<span class="f13">林小芳 15100001234</span>
+			</div>
+			<div class="r">
+				<span class="f15">￥0.00</span>
+				<span class="f13">&times;1</span>
+				<span class="f13">合计<b class="red">￥0.00</b></span>
+			</div>
+			
+		</li>-->
+	</ul>
+	</body>
+</html>
+<script src="../script/api.js" type="text/javascript" charset="utf-8"></script>
+<script src="../script/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="../script/fastclick.js" type="text/javascript" charset="utf-8"></script>
+<script src="../script/dlc.js" type="text/javascript" charset="utf-8"></script>
+<script src="../script/Unix.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+apiready = function(){
+  api.setStatusBarStyle({
+    style: 'dark'
+  });
+  //
+  
+  //
+  //alert(api.pageParam.is_show_price)
+  //
+  var d = new Date();
+  var str = d.getFullYear()+"-"+((d.getMonth()+1)<10?'0'+(d.getMonth()+1):(d.getMonth()+1));
+  var year = d.getFullYear()
+  var mon = (d.getMonth()+1)<10?'0'+(d.getMonth()+1):(d.getMonth()+1)
+  var mon2 = (d.getMonth()+1)<10?'0'+(d.getMonth()+1):(d.getMonth()+1)
+  //alert(str)
+  $('.date').text(str)
+  a(mon)//信息统计的渲染
+  show(1,mon)//列表的渲染
+  $('.menu').on('click','span',function(){
+		$(this).addClass('active').siblings().removeClass('active')
+		show($(this).index()+1,mon)
+	});
+  //查看月份
+//	var resultNum = {
+//			"data": [
+//				{"name":"2017-01"},
+//				{"name":"2017-02"},
+//				{"name":"2017-03"},
+//				{"name":"2017-04"},
+//				{"name":"2017-05"},
+//				{"name":"2017-06"},
+//				{"name":"2017-07"},
+//				{"name":"2017-08"},
+//				{"name":"2017-09"},
+//				{"name":"2017-10"},
+//				{"name":"2017-11"},
+//				{"name":"2017-12"}
+//			]
+//		};
+		var result = {"data" : []};
+		for(var i=1;i<13;i++){
+			result.data.push({'name':year+'-'+(i<10?'0'+i:i)})
+		}
+        $('.date').click(function(){
+            var UIActionSelector = api.require('UIActionSelector');
+            UIActionSelector.open({
+                datas : result.data,
+                layout : {
+                    row : 5,
+                    col : 1,
+                    height : 30,
+                    size : 12,
+                    sizeActive : 14,
+                    rowSpacing : 5,
+                    colSpacing : 10,
+                    maskBg : 'rgba(0,0,0,0.2)',
+                    bg : '#fff',
+                    color : '#888',
+                    colorActive : '#3c6cf4',
+                    colorSelected : '#3c6cf4'
+                },
+                animation : true,
+                cancel : {
+                    text : '取消',
+                    size : 14,
+                    w : 80,
+                    h : 35,
+                    bg : '#fff',
+                    bgActive : '#ccc',
+                    color : '#888',
+                    colorActive : '#fff'
+                },
+                ok : {
+                    text : '确定',
+                    size : 14,
+                    w : 80,
+                    h : 35,
+                    bg : '#fff',
+                    bgActive : '#ccc',
+                    color : '#3c6cf4',
+                    colorActive : '#fff'
+                },
+                title : {
+                    text : '月份筛选',
+                    size : 14,
+                    h : 44,
+                    bg : '#eee',
+                    color : '#888'
+                },
+                fixedOn : api.frameName
+            }, function(ret, err) {
+                if (ret.eventType=="ok") {
+                    $('.date').text(ret.level1);
+                    mon = ret.level1.substring(5)
+                    console.log(mon)
+                    $('#menu span:first-of-type').addClass('activ').siblings().removeClass('activ')
+                    a(mon)
+                    show(1,mon)
+                } else {
+                    console.log(err);
+                }
+            });
+        })
+
+
+		//初始化
+		function a(m){
+			$.ajax({
+				type:"post",
+				url:xy_user_url,
+				dataType:'json',
+				data:{api_name:'orderList',token:api.pageParam.token,month:m},
+				success:function(res){
+					console.log(res)
+					
+					$('.name').text(res.data.shop_name)
+					$('.settle_type').text(api.pageParam.id==0?'待结算':'已结算')
+					$('.settle_time').text(api.pageParam.id==0?'暂无':res.data.bill_balance)
+					$('.alipay').text(api.pageParam.id==0?'暂无':res.data.alipay)
+					
+					//$('.ti').text(api.pageParam.id==0?'':'结算起止时间：'+api.pageParam.bt +'至'+ api.pageParam.ct)
+					$('.readytotal').text('￥'+res.data.is_check_money)
+					
+					$('.overtotal').text('￥'+res.data.is_pass_money)
+					$('.refundtotal').text('￥'+res.data.is_refund_money) 
+					$('.total').text('￥'+res.data.profit)
+
+					//数据初始化
+					$('.tel b').text(res.data.bill_data)
+					$('.number').text(res.data.number)
+					$('.rank').text(res.data.ranking)
+					$('.profit').text(api.pageParam.is_show_price==0?'0':res.data.profit)
+					$('.status').text(res.data.status==0?'未结算':'已结算')
+					$('.num_a').text(res.data.number1)
+					$('.num_b').text(res.data.number2)
+					$('.num_c').text(res.data.number3)
+	
+				}
+			});
+		}
+
+	function show(type,m){
+		$.ajax({
+			type:"post",
+			url:xy_user_url,
+			dataType:'json',
+			data:{api_name:'balanceList',token:localStorage.getItem('token'),id:api.pageParam.id,type:type,month:m},
+			success:function(res){
+				console.log(res)
+				if(m == mon2){
+					$('.b').hide(),$('.m').hide()
+				}else{
+					$('.b').show(),$('.m').show()
+				}
+				//数据初始化		
+				$('.list').children().remove();
+				if(res.data.length == 0){
+					$('.list').append('<li class="f15" style="justify-content: center;">暂无数据</li>')
+				}else if(res.data==''){
+					$('.list').append('<li class="f15" style="justify-content: center;">不可查看</li>')
+				}else{
+					
+					for(i in res.data){
+						$('.list').append(
+							'<li>'+
+								'<div class="l">'+
+									'<span class="f15">'+res.data[i].name+'</span>'+
+									'<span class="f13">出票时间：'+date('Y-m-d H:i',res.data[i].ctime)+'</span>'+
+									'<span class="f13">'+(type==1?'核销时间':type==2?'过期时间':'退款时间')+'：'+date('Y-m-d H:i',res.data[i].htime)+'</span>'+
+									'<span class="f13">'+res.data[i].vipname+' '+res.data[i].vipmobile+'</span>'+
+								'</div>'+
+								'<div class="r">'+
+									'<span class="f15">￥'+(api.pageParam.is_show_price==0?'0':res.data[i].contract_price)+'</span>'+
+									'<span class="f13">&times;'+res.data[i].totalnum+'</span>'+
+									'<span class="f13">合计：<b class="red">￥'+(api.pageParam.is_show_price==0?'0':res.data[i].userprofit)+'</b></span>'+
+								'</div>	'	+		
+							'</li>'
+						)
+					}
+				}
+
+			}
+		});
+	}
+
+
+
+	}
+</script>

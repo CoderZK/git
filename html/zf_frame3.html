@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<!--<meta name="flexible" content="initial-dpr=1">-->
+		<meta name="flexible" content="initial-dpr=1">
+		<!--step-1 引入flexible.script -->
+		<script src="http://g.tbcdn.cn/mtb/lib-flexible/0.3.4/??flexible_css.js,flexible.js"></script>
+		<link rel="stylesheet" href="../css/normalize.css" type="text/css">
+		<link rel="stylesheet" href="../css/mycss.css">
+		<title>账单列表</title>
+		<style>
+			/*    	[data-dpr="2"] .main {
+			 font-size: 28px;
+			 }
+			 [data-dpr="3"] .main {
+			 font-size: 42px;
+			 }*/
+			[data-dpr="2"] .index-container #Bill-list-header + .main .main-inner ul li {
+				font-size: 26px;
+			}
+			[data-dpr="3"] .index-container #Bill-list-header + .main .main-inner ul li {
+				font-size: 39px;
+			}
+			.index-container #Bill-list-header + .main .main-inner ul li {
+				font-size: 13px;
+			}
+			.index-container #Bill-list-header + .main .main-inner p {
+				font-size: 13px;
+			}
+			[data-dpr="2"] .index-container #Bill-list-header + .main .main-inner p {
+				font-size: 26px;
+			}
+			[data-dpr="3"] .index-container #Bill-list-header + .main .main-inner p {
+				font-size: 39px;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="index-container">
+			<header class="header" id='Bill-list-header'>
+				<!-- <div class="header-inner">
+				账单列表
+				</div> -->
+			</header>
+			<main class="main">
+				<!--<div class="main-inner" style="height: auto;">
+				<ul style="border-bottom-color:#eee;font-size: 15px;">
+				<li><span class="fw600" style="font-size: 17px;">当前订单：</span> <span class="FF9000">待结算</span></li>
+				<li><span>核销订单</span> <span class="offlist">×0</span></li>
+				<li><span>过期订单</span> <span class="overlist">×0</span></li>
+				<li><span>退款订单</span> <span class="refundlist">×0</span></li>
+				</ul>
+				<p><span></span><span class="refundPrice" style="font-size: 15px;">利润合计：￥0.00</span></p>
+				</div>
+				<div class="main-inner" style="height: auto;">
+				<ul style="border-bottom-color:#eee;font-size: 15px;">
+				<li><span class="fw600" style="font-size: 17px;"><i style="font-style:normal;" id="cyclename"></i>账单：</span> <span class="font-green">已结算</span></li>
+				<li><span>核销订单</span> <span class="weeklist">×0</span></li>
+				<li><span>过期订单</span> <span class="weekover">×0</span></li>
+				<li><span>退款订单</span> <span class="weekbill">×0</span></li>
+				</ul>
+				<p><span class="date">（至）</span> <span class="weekPrice" style="font-size: 15px;">利润合计：￥0.00</span></p>
+				</div>-->
+			</main>
+		</div>
+	</body>
+</html>
+<script src="../script/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="../script/fastclick.js" type="text/javascript" charset="utf-8"></script>
+<script src="../script/dlc.js" type="text/javascript" charset="utf-8"></script>
+<script src="../script/Unix.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+	apiready = function() {
+	var reflash = false; //防止重复刷新
+		api.setStatusBarStyle({
+			style : 'dark'
+		});
+		initPullRefresh();
+		//初始化下拉刷新
+		type();
+		$.get("../script/mould/mould.html", function(ret) {
+			$("body").append(ret);
+			api.refreshHeaderLoading();
+			//首先下拉一次 读取第一次的数据
+		});
+		//初始化下拉刷新
+		function initPullRefresh() {
+			api.setRefreshHeaderInfo({
+				visible : true,
+				loadingImg : 'widget://image/refresh.png',
+				bgColor : '#fff',
+				textColor : '#999',
+				textDown : '下拉刷新...',
+				textLoading : '刷新中...',
+				textUp : '松开刷新...',
+				showTime : false
+			}, function(ret, err) {
+				if (reflash == false) {
+					type();
+					reflash = true;
+					setTimeout(function() {
+						reflash = false;
+					}, 1000 * 5);
+				} else {
+					api.refreshHeaderLoadDone();
+				}
+			});
+		}
+function type(){
+		$.ajax({
+		type : 'POST',
+		url : zf_url,
+		data : {
+		api_name : 'balanceList',
+		token : localStorage.getItem('token')
+		},
+		dataType : 'json',
+		success : function(res) {
+		console.log(res);
+		$('.main').children().remove();
+		$('.main').prepend('<div class="olist main-inner" style="height: auto;" data-id="' + res.data.olist.id + '">' + '<ul style="border-bottom-color:#eee;font-size: 15px;">' + '<li><span class="fw600" style="font-size: 17px;">当前账单：</span> <span class="FF9000">待结算</span></li>' + '<li><span>核销订单</span> <span class="offlist">&times;' + res.data.olist.ischeck + '</span></li>' + ' <li><span>过期订单</span> <span class="overlist">&times;' + res.data.olist.ispass + '</span></li>' + '<li><span>退款订单</span> <span class="refundlist">×' + res.data.olist.isrefund + '</span></li>' + '</ul>' + '<p><span></span><span class="refundPrice" style="font-size: 15px;">利润合计：￥' + res.data.olist.profit + '</span></p>' + '</div>')
+		for (i in res.data.blist) {
+		$('.main').append(
+		'<div class="blist main-inner" style="height: auto;" data-id="' + res.data.blist[i].id + '" data-bt="' + res.data.blist[i].balance_time + '" data-ct="' + date('Y-m-d', res.data.blist[i].ctime) + '">' + ' <ul style="border-bottom-color:#eee;font-size: 15px;">' + ' <li><span class="fw600" style="font-size: 17px;"><i style="font-style:normal;" id="cyclename"></i>往期账单：</span> <span class="font-green">已结算</span></li>' + '<li><span>核销订单</span> <span class="weeklist">&times;' + res.data.blist[i].ischeck + '</span></li>' + '<li><span>过期订单</span> <span class="weekover">&times;' + res.data.blist[i].ispass + '</span></li>' + '<li><span>退款订单</span> <span class="weekbill">&times;' + res.data.blist[i].isrefund + '</span></li>' + '</ul>' + ' <p><span class="date">' + res.data.blist[i].balance_time  + '</span> <span class="weekPrice" style="font-size: 15px;">利润合计：￥' + res.data.blist[i].profit + '</span></p>' + ' </div>')
+		}
+		//          $('.offlist').html('&times;'+data.data.offlist)
+		//          $('.overlist').html('&times;'+data.data.overlist)
+		//          $('.refundlist').html('&times;'+data.data&times;)
+		//          $('.refundPrice').html('利润合计：￥'+((data.data.refundPrice*1).toFixed(2)))
+		//          $('.weeklist').html('&times;'+data.data.weeklist)
+		//          $('.weekover').html('&times;'+data.data.weekover)
+		//          $('.weekbill').html('&times;'+data.data.weekbill)
+		//          $('.date').html('（'+date('Y-m-d', data.data.startDate) +'至'+date('Y-m-d', data.data.endDate)+'）')
+		//          $('.weekPrice').html('利润合计：￥'+((data.data.weekPrice*1).toFixed(2)))
+		//          $('#cycletime').text(new Date(data.data.endDate).getDate()-new Date(data.data.startDate).getDate()==7?'周结':'月结');
+		//          console.log(new Date(data.data.endDate).getDate()-new Date(data.data.startDate).getDate());
+		api.refreshHeaderLoadDone();
+		}
+	});
+}
+	$('.main').on('click', '.main-inner', function() {
+		api.openWin({
+			name : 'zf_frame31',
+			url : 'zf_frame31.html',
+			pageParam : {
+				id : $(this).data('id'),
+				bt : $(this).data('bt'),
+				ct : $(this).data('ct')
+			}
+		});
+	});
+	}
+</script>

@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>注册</title>
+		<meta name="viewport" content="initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+		<link rel="stylesheet" type="text/css" href="../css/r-common.css"/>
+	</head>
+	<style type="text/css">
+  body{
+    background: #fff
+  }
+   header{
+     display: flex;
+     flex-direction: row;
+     justify-content: space-between;
+     align-items: center;
+     width: 90%;
+     padding: 3rem 5% 0;
+     font-size: 1.8rem;
+     height: 4.9rem;
+     border-bottom: 1px solid #dadada;
+   }
+   header img{width: 3%;padding: 4% 3%;}
+
+
+
+   .login{
+     width: 90%;
+     padding: 3% 5% 1%;
+   }
+   .login p{
+     width: 80%;
+     padding: 4.08% 5%;
+     display: flex;
+     justify-content: space-between;
+     margin: 0 auto 5%;
+     border-radius: 6px;
+     background: rgba(204, 204, 204, 0.3);
+   }
+   .login input{
+     border: none;
+     outline: none;
+     font-size: 1.5rem;
+     background: initial;
+     width: 100%
+   }
+   .login .sms{
+     display: inline-block;
+    width: 40%;
+    margin-left: 5%;
+   }
+   .login button{
+     border:none ;
+     outline: none;
+     background: #ff9900;
+     color: #fff;
+     font-size: 1.5rem;
+     border-radius: 6px;
+     width: 35%;
+     margin-left: 5%;
+     padding: 4.08% 0;
+   }
+
+   .confirm{
+     color: #fff;
+     font-size: 1.8rem;
+     display: block;
+     margin: 0% auto;
+     width: 80%;
+     height: 4.5rem;
+     background: #ff9900;
+     border: none;
+     outline: none;
+     border-radius: 6px;
+     letter-spacing: 5px
+   }
+	</style>
+	<body>
+    <header>
+      <img src="../image/r-back.png" class="back">
+      <span>手机号验证</span>
+      <span></span>
+    </header>
+		<div class="login">
+			<p><input type="tel"  maxlength="11" placeholder="输入您的手机号来作为登录账号" value="" id="tel"/></p>
+      <p><input type="password"   placeholder="输入您的密码" value="" id="password"/></p>
+      <p><input type="password"   placeholder="确认您的密码" value="" id="confirm"/></p>
+      <p class="sms"><input type="number" placeholder="输入验证码" id="yzm"/></p><button class="yzmBtn">获取验证码</button>
+
+		</div>
+		<button class="confirm">提交</button>
+	</body>
+</html>
+<script src="../script/api.js" type="text/javascript" charset="utf-8"></script>
+<script src="../script/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="../script/fastclick.js" type="text/javascript" charset="utf-8"></script>
+<script src="../script/dlc.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+apiready = function(){
+  api.setStatusBarStyle({
+    style: 'dark'
+  });
+
+	$('.back').click(function(){api.closeWin();});
+
+		$(".yzmBtn").on('click', function() {
+				var tel = $('#tel').val();
+				if(isNull(tel)) {
+					api.toast({msg:'手机号码必须填写'});
+				} else if(!(/^1[34578]\d{9}$/.test(tel))) {
+					api.toast( {msg:'请输入正确的手机号码'});
+				} else {
+					var second = 60;
+					var t = setInterval(function() {
+						if(second <= 0) {
+							second = 0;
+							$(".yzmBtn").text("重发验证码");
+							$(".yzmBtn").attr("disabled", false).css('background','#ff9900');
+							clearInterval(t);
+						} else {
+							second--;
+							$(".yzmBtn").attr("disabled", true);
+							$(".yzmBtn").text(second + "s").css('background','#ccc');
+						}
+					}, 1000);
+
+					$.ajax({
+						type:'POST',
+						url:ajax_url,
+						data:{api_name:'sendCode',mobile:tel},
+						dataType:'json',
+						success:function(data){
+								console.log(data);
+								api.toast({msg: data.msg});
+						}
+					});
+				}
+			})
+
+		$('.confirm').on('click', function() {
+				var tel = $('#tel').val();
+				var yzm = $('#yzm').val();
+				var password = $('#password').val();
+				var confirm = $('#confirm').val();
+				if(isNull(tel)) {
+					api.toast({msg:'请输入手机号码'});
+				}else if(!(/^1[34578]\d{9}$/.test(tel))) {
+					api.toast({msg:'请输入正确的手机号码'});
+				}else if(isNull(password)){
+					api.toast({msg:'请输入密码'});
+				}else if(isNull(confirm)){
+				    api.toast({msg:'请确认您的密码'});
+			    }else if(password != confirm){
+					api.toast({msg:'两次密码不相同'});
+				}else if(isNull(yzm)){
+					api.toast({msg:'请输入验证码'});
+				}else {
+					/***********注册*****************/
+					$.ajax({
+						type:'POST',
+						url:ajax_url,
+						data:{api_name:'register',mobile:tel,userpwd:confirm,password:password,usercode:yzm},
+						dataType:'json',
+						success:function(data){
+							console.log(data);
+							if(data.code==1){
+							localStorage.setItem("token", data.data);
+								api.openWin({
+									name: 'r-renzhen',
+									url: 'r-renzhen.html',
+									pageParam:{
+										token:data.data
+									}
+								});
+							}
+							api.toast({msg: data.msg});
+						}
+					});
+				}
+
+			})
+
+	}
+</script>

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="flexible" content="initial-dpr=1">
+    <title>个人中心</title>
+    <script src="http://g.tbcdn.cn/mtb/lib-flexible/0.3.4/??flexible_css.js,flexible.js"></script>
+    <link type="text/css" rel="stylesheet" href="../css/xy_main.css" media="all">
+</head>
+
+<body>
+    <div class="xy_wrap">
+      <div id="header"></div>
+        <div class="xy_contents" style="height:calc(100% - 25px);">
+            <div class="slide_l">
+                <div class="slide_l_bg"></div>
+                <div class="slide_l_inner">
+                    <p class="f15cw l100 bb" id="name" style="font-size:20px">
+                    </p>
+                    <div class="l60 f13ccc">
+                        <p>注册地所在城市：<i id="city"></i></p>
+                        <p>当月销售额：<i id="totalmoney"></i>元</p>
+                        <p>当月排名：<i id="mingc"></i></p>
+                        <p>当月排名前三：</p>
+                        <p class="l30">第一名：<i id="f1"></i>元</p>
+                        <p class="l30">第二名：<i id="f2"></i>元</p>
+                        <p class="l30">第三名：<i id="f3"></i>元</p>
+                    </div>
+
+                    <div class="f15cw l88 mt40">
+                        <p class="f15cw icon icon_1 bb" id="jiesuan">
+                            订单结算
+                        </p>
+                        <p class="f13cw bb" style="display: inline-block;">
+                            开启/关闭协议价显示
+                            <div class="boxCtrl" style="display: inline-block;margin-left:5px;vertical-align: sub;">
+                                <label for="c1">
+                            <input type="checkbox" id="c1">
+                            <div class="bg"></div>
+                        </label>
+                            </div>
+                        </p>
+                        <p class="icon icon_2 bb" id="changepass">
+                            密码修改
+                        </p>
+                        <p class="icon icon_3 bb">
+                            众筹
+                        </p>
+                        <p class="icon icon_4 bb">
+                            行家回答
+                        </p>
+                        <p id="loginOut">
+                            退出登录
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript" src="http://www.efendan.com/public/weixin/js/jquery-2.1.3.min.js"></script>
+        <script type="text/javascript" src="../script/api.js"></script>
+    <script type="text/javascript">
+        $('.tap').on({
+            'click': function(e) {
+                $(this).addClass('active').parents('li').siblings().find('span').removeClass('active');
+                $('.sub' + e.target.classList[1].substr(3, 1)).show().siblings('.detail-scroll-box').hide();
+            }
+        })
+
+        apiready = function() {
+        
+        api.addEventListener({
+		    name: 'myEvent'
+		}, function(ret, err) {
+		   reload()
+		});
+
+            var url = 'http://mobile.somochina.com/App/Settlement/api';
+            $api.fixStatusBar($api.dom('#header'));
+            api.setStatusBarStyle({
+              style: 'dark'
+          });
+          reload()
+       function reload(){
+            $.ajax({
+                type: 'POST',
+                url: url,
+                dataType: 'json',
+                data: {
+                    api_name: 'center',
+                    token: api.pageParam.token
+                },
+                success: function(res) {
+                  console.log(res);
+                  if(res.data){
+                    localStorage.setItem('city',res.data.city);
+                      $('#name').text(res.data.nickname);
+                      $('#city').text(res.data.city);
+                      $('#totalmoney').text(res.data.saleMoney);
+                      $('#mingc').text(paiming(res.data.ranking));
+                      $('#f1').text(res.data.list[0]);
+                      $('#f2').text(res.data.list[1]);
+                      $('#f3').text(res.data.list[2]);
+                      $('#c1').prop('checked',res.data.is_show_price==0?false:true)
+ 					  $('#jiesuan').attr('data-id',res.data.is_show_price)
+                  }
+                },
+                error: function(err) {
+					console.log(err)
+                }
+            });
+		}
+            $('#c1').on({
+                'change': function(e) {
+                    var price_gq = '';
+                    if ($(this).is(':checked')) {
+                        price_gq = 1
+                    } else {
+                        price_gq = 0;
+                    }
+                    $.ajax({
+                        type: 'POST',
+                        url: url,
+                        dataType: 'json',
+                        data: {
+                            api_name: 'priceGq',
+                            status: price_gq,
+                            token:api.pageParam.token
+                        },
+                        success: function(res) {
+                            console.log(res);
+                            $('#jiesuan').attr('data-id',price_gq)
+                        },
+                        error: function(err) {
+
+                        }
+                    });
+                }
+            })
+            
+			
+            $('#jiesuan').on({
+              'click':function(e){
+                api.openWin({
+                    name: 'xy_list',
+                    url: 'xy_list.html',
+                    pageParam:{
+                   	 token:api.pageParam.token,
+                   	 rank:$('#mingc').text(),
+                   	 is_show_price:$(this).attr('data-id')
+                    }
+                });
+              }
+            })
+
+            $('#changepass').on({
+              'click':function(e){
+                api.openWin({
+                    name: 'changepass',
+                    url: 'Scenic-password-change.html',
+                    pageParam:{tel:api.pageParam.tel,token:api.pageParam.token,type:'user'}
+                });
+              }
+            })
+
+            $('#loginOut').on({
+              'click':function(){
+                localStorage.removeItem('token');
+                 api.closeToWin({name: 'user-login'});
+              }
+            })
+
+
+
+            function paiming(m) {
+              if(m>=1 && m<=10){
+                return '第'+m+'名'
+              }else if(m<=20){
+                return '前20'+'名'
+              }else if(m<=50){
+                return '前50'+'名'
+              }else if(m<=100){
+                return '前100'+'名'
+              }else if(m<=500){
+                return '前500'+'名'
+              }else {
+                return '500名以外'
+              }
+            }
+        };
+    </script>
+</body>
+
+</html>

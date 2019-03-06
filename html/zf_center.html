@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="flexible" content="initial-dpr=1">
+    <title>Title</title>
+    <script src="http://g.tbcdn.cn/mtb/lib-flexible/0.3.4/??flexible_css.js,flexible.js"></script>
+    <link type="text/css" rel="stylesheet" href="../css/xy_main.css" media="all">
+    <link type="text/css" rel="stylesheet" href="../css/flexslider.css" media="all">
+</head>
+
+<body>
+<div class="xy_wrap">
+    <div class="xy_contents">
+        <div class="xy_contents_main">
+            <div class="xy_center">
+                <div class="t f14c3">
+                    <span class="icon icon_6" id="jsslidel">个人中心</span>
+                    <div class="slidedown" id="jsslidedown">
+                        云南昆明<i id="jsrotate"></i>
+                    </div>
+                </div>
+                <div class="slidedownlist">
+                    <div class="t">
+                        <span style="text-decoration: underline;">可查看协议价地点</span>
+                        <span>其它</span>
+                    </div>
+                    <div class="b" id="addreslist">
+                        <span>云南昆明</span>
+                    </div>
+                </div>
+                <div class="flexslider">
+                    <ul class="slides">
+                        <!-- <li>
+                        <img src="../image/banner.png"/>
+                    </li>
+                    <li>
+                        <img src="../image/banner.png"/>
+                    </li>
+                    <li>
+                        <img src="../image/banner.png"/>
+                    </li>
+                    <li>
+                        <img src="../image/banner.png"/>
+                    </li> -->
+                    </ul>
+                </div>
+                <div class="search">
+                    <div class="searchBox">
+                        <input type="search" name="hid" placeholder="搜索" onsearch="getData()" autocomplete="off" id="searchValue">
+                        <span class="f15c3"></span>
+                    </div>
+
+                </div>
+                <div class="xy_list">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="../script/jquery.min.js"></script>
+<script type="text/javascript" src="../script/jquery.flexslider-min.js"></script>
+<script type="text/javascript">
+    apiready = function() {
+        var url = 'http://mobile.somochina.com/app/Users/index';
+        $.ajax({
+            type: 'POST',
+            url: url,
+            dataType: 'json',
+            data: {
+                api_name: 'Reservelist',
+                token: localStorage.getItem('token')
+            },
+            success: function(res) {
+                var str = '',
+                    str1 = '';
+                res.data.shoplist.forEach(function(p1, p2, p3) {
+                    str += '<div class="item" data-id="' + p1.id + '"><img src="' + p1.pic + '"><div class="item_r"><p class="f14c3">' + p1.name + '<span>￥90<i>起</i></span></p><p>营业时间：' + p1.timest + '~' + p1.timeed +
+                        '</p><div class="item_r_b"><span>可购今日票</span><span>可退票</span><i class="f13c3">购票须知>></i></div></div></div>';
+                });
+                $('.xy_list').html(str);
+                res.data.bannerlist.forEach(function(p1, p2, p3) {
+                    str1 += '<li><img src="'+p1+'" /></li>';
+                });
+                $('.slides').html(str1);
+                $('.flexslider').flexslider({
+                    animation: "slide",
+                    controlNav: true,
+                    directionNav: false
+                });
+                $('.item').on({
+                    'click': function(e) {
+                        var that=this;
+                        api.openWin({
+                            name: 'xy_detail',
+                            url: 'xy_detail.html',
+                            pageParam: {
+                                id: $(this).attr('data-id')
+                            }
+                        });
+                    }
+                })
+            },
+            error: function(err) {
+
+            }
+        });
+
+
+        $.ajax({
+            type: 'POST',
+            url: url,
+            dataType: 'json',
+            data: {
+                api_name: 'Addresslist',
+                token: localStorage.getItem('item')
+            },
+            success: function(res) {
+                var str='';
+                res.data.forEach(function(p1,p2,p3){
+                    str+='<span>'+p1+'</span>';
+                })
+                $('#addreslist').html(str);
+            },
+            error: function(err) {
+
+            }
+        });
+
+
+
+        api.openSlidLayout({
+            type: 'left',
+            leftEdge: api.winWidth / 2,
+            fixedPane: {
+                name: 'xy_slider',
+                bgColor: '#fff',
+                url: 'xy_slider.html'
+            },
+            slidPane: {
+                name: 'xy_frame0',
+                url: 'xy_frame0.html',
+                bgColor: '#fff',
+                hScrollBarEnabled: false
+            }
+        }, function(ret) {});
+
+        $('#jsslidel').on({
+            'click':function(e){
+                api.openSlidPane({
+                    type: 'left'
+                });
+
+            }
+        })
+    };
+
+
+    var slidedownlist = document.querySelector('.slidedownlist'),
+        jsrotate = document.querySelector('#jsrotate');
+    document.querySelector('#jsslidedown').addEventListener('click', function() {
+        if (window.getComputedStyle(slidedownlist, null).getPropertyValue('display') == 'none') {
+            slidedownlist.style.display = 'block';
+            jsrotate.style.transform = 'rotateZ(180deg)';
+        } else {
+            slidedownlist.style.display = 'none';
+            jsrotate.style.transform = 'rotateZ(0deg)';
+        }
+
+    }, false);
+
+    function getData() {
+        console.log('ddd');
+    }
+</script>
+</body>
+
+</html>

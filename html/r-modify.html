@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<title>修改密码</title>
+	<meta name="viewport" content="initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+	<link rel="stylesheet" type="text/css" href="../css/r-common.css" />
+</head>
+<style type="text/css">
+	body {
+		background: #fff
+	}
+
+	header {
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+		align-items: center;
+		width: 90%;
+		padding: 3rem 5% 0;
+		font-size: 1.8rem;
+		height: 4.9rem;
+		border-bottom: 1px solid #dadada
+	}
+
+	header img {
+		width: 3%;
+		padding: 4% 3%;
+	}
+
+	.login {
+		width: 90%;
+		padding: 5% 5% 25%;
+	}
+
+	.login p {
+		width: 80%;
+		padding: 4.08% 5%;
+		display: flex;
+		justify-content: space-between;
+		margin: 0 auto 5%;
+		border-radius: 6px;
+		background: rgba(204, 204, 204, 0.3);
+	}
+
+	.login input {
+		border: none;
+		outline: none;
+		font-size: 1.5rem;
+		background: initial;
+		width: 100%
+	}
+
+	.login .sms {
+		display: inline-block;
+		width: 40%;
+		margin-left: 5%;
+	}
+
+	.login button {
+		border: none;
+		outline: none;
+		background: #ff9900;
+		color: #fff;
+		font-size: 1.5rem;
+		border-radius: 6px;
+		width: 35%;
+		margin-left: 5%;
+		padding: 4.08% 0;
+	}
+
+
+
+	.confirm {
+		color: #fff;
+		font-size: 1.8rem;
+		display: block;
+		margin: 0% auto;
+		width: 80%;
+		height: 4.5rem;
+		background: #ff9900;
+		border: none;
+		outline: none;
+		border-radius: 6px;
+		letter-spacing: 5px
+	}
+
+	.btn button:first-of-type {
+		background: #999
+	}
+
+	.btn button:last-of-type {
+		background: #ff9000
+	}
+</style>
+
+<body>
+	<header>
+		<img src="../image/r-back.png" class="back">
+		<span>修改密码</span>
+		<span></span>
+	</header>
+	<div class="login">
+		<p><input type="password" placeholder="输入您的新密码" value="" id="password" /></p>
+		<p><input type="password" placeholder="确认您的新密码" value="" id="confirm" /></p>
+
+	</div>
+	<button class="confirm">提交</button>
+</body>
+
+</html>
+<script src="../script/api.js" type="text/javascript" charset="utf-8"></script>
+<script src="../script/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="../script/fastclick.js" type="text/javascript" charset="utf-8"></script>
+<script src="../script/dlc.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+var url='http://mobile.somochina.com/App/user';
+	apiready = function() {
+		api.setStatusBarStyle({
+			style: 'dark'
+		});
+
+
+
+		$('.back').click(function() {
+				api.closeWin();
+			})
+			// api.openWin({
+			//       name: 'r-success',
+			//       url: 'r-success.html',
+			//       slidBackEnabled：false
+			//       pageParam:{
+			//         title:'修改密码'
+			//       }
+			// });
+
+		$('.confirm').on('click', function() {
+			var password = $('#password').val();
+			var confirm = $('#confirm').val();
+			if (password == '' || confirm == '') {
+				api.toast({
+					msg: '请输入密码'
+				});
+			} else if (password != confirm) {
+				api.toast({
+					msg: '两次密码不相同'
+				});
+			} else {
+				/***********注册*****************/
+				$.ajax({
+					type: 'POST',
+					url: ajax_url,
+					data: {
+						api_name: 'updatePass',
+						password: password,
+						pass: confirm,
+						token: localStorage.getItem("token")
+					},
+					dataType: 'json',
+					success: function(data) {
+						console.log(data);
+						$('#password,#confirm').val('');
+						api.openWin({
+							name: 'r-success',
+							url: 'r-success.html',
+							pageParam: {
+								title: '修改密码',
+								from:api.pageParam.from
+							}
+						});
+					}
+				});
+			}
+
+		})
+
+	}
+</script>

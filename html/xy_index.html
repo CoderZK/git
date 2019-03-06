@@ -1,0 +1,238 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <title>首页导航</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <style>
+        header {
+            background-color: #f2f2f2;
+            display: none;
+        }
+
+        header ul li {
+            line-height: 50px;
+            text-align: center;
+            display: none;
+            color: #323237;
+            position: relative;
+            font-size: 18px;
+        }
+
+        header ul li.active {
+            display: block;
+        }
+
+        #footer {
+            background-color: #f2f2f2;
+            box-sizing: border-box;
+        }
+
+        #footer ul li{
+          text-align: center;
+        }
+
+        #footer ul li span {
+            background: url() no-repeat left center;
+            background-size: auto 27px;
+            text-align: center;
+            padding-left: 36px;
+            line-height: 50px;
+            font-size: 16px;
+        }
+
+        #footer ul li.active {
+            color: #FF9000;
+        }
+
+        #footer ul li:nth-child(1) span {
+            background-image: url(../image/icon_17active.png);
+        }
+
+        #footer ul li:nth-child(2) span {
+            background-image: url(../image/icon_18.png);
+        }
+
+        #footer ul li:nth-child(1).active span {
+            background-image: url(../image/icon_17.png);
+        }
+
+        #footer ul li:nth-child(2).active span {
+            background-image: url(../image/icon_18active.png);
+        }
+
+        html,
+        body {
+            font-size: 14px;
+            height: 100%;
+        }
+
+        .hover {
+            opacity: .8;
+        }
+
+        .flex-wrap {
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: flex;
+        }
+
+        .flex-con {
+            -webkit-box-flex: 1;
+            -webkit-flex: 1;
+            flex: 1;
+        }
+
+        .flex-vertical {
+            -webkit-box-orient: vertical;
+            -webkit-flex-flow: column;
+            flex-flow: column;
+        }
+
+        .border-t,
+        .border-b {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+        }
+
+        .border-t:before,
+        .border-b:after {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            background: #ddd;
+            right: 0;
+            height: 1px;
+            -webkit-transform: scaleY(0.5);
+            transform: scaleY(0.5);
+            -webkit-transform-origin: 0 0;
+            transform-origin: 0 0;
+        }
+
+        .border-b:after {
+            top: auto;
+            bottom: 0;
+        }
+
+        #wrap {
+            height: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="wrap" class="flex-wrap flex-vertical">
+        <!-- <header>
+        <ul>
+            <li class="border-b active">首页</li>
+            <li class="border-b">购物车</li>
+            <li class="border-b">我的</li>
+            <li class="border-b">我的</li>
+        </ul>
+    </header>
+
+    <div id="main" class="flex-con">
+
+    </div> -->
+
+        <div id="footer" class="border-t">
+            <ul class="flex-wrap">
+                <li tapmode="hover" onclick="randomSwitchBtn( this );" class="flex-con active">
+                  <span>首页</span>
+                </li>
+                <li tapmode="hover" onclick="randomSwitchBtn( this );" class="flex-con">
+                  <span>订单</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+</body>
+
+</html>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/jquery.min.js"></script>
+<script type="text/javascript">
+    apiready = function() {
+        footerPos = $api.offset($api.dom('#footer'));
+         api.setStatusBarStyle({
+                style: 'dark'
+            });
+
+        funIniGroup();
+
+        api.addEventListener({
+            name: 'keyback'
+        }, function(ret, err) {
+            api.confirm({
+                title: '退出提示',
+                msg: '确定要退出宿盟网络吗',
+                buttons: ['确定', '取消']
+            }, function(ret, err) {
+                var index = ret.buttonIndex;
+                if (index == 1) {
+                    api.closeWidget({
+                        id: 'A6058346594837',
+                        retData: {
+                            name: 'closeWidget'
+                        },
+                        silent: true
+                    });
+                }
+            });
+        })
+    }
+
+    function funIniGroup() {
+        api.openFrameGroup({
+            name: 'group',
+            scrollEnabled: false,
+            rect: {
+                x: 0,
+                y: 0,
+                w: api.winWidth,
+                h: api.winHeight - (footerPos.h)
+            },
+            index: 0,
+            preload:2,
+            frames: [
+              {
+                name: 'homeSlide',
+                url: 'homeSlide.html',
+                bgColor: '#fff',
+                bounces:false,
+            }, {
+                name: 'homeSlide2',
+                url: 'homeSlide2.html',
+                bgColor: '#fff',
+                bounces:false,
+            }]
+        }, function(ret, err) {
+
+        });
+
+    }
+
+    // 随意切换按钮
+    function randomSwitchBtn(tag) {
+        if (tag == $api.dom('#footer li.active')) return;
+        var eFootLis = $api.domAll('#footer li'),index = 0;
+        for (var i = 0, len = eFootLis.length; i < len; i++) {
+            if (tag == eFootLis[i]) {
+                index = i;
+            } else {
+                $api.removeCls(eFootLis[i], 'active');
+            }
+        }
+        $api.addCls(eFootLis[index], 'active');
+        api.setFrameGroupIndex({
+            name: 'group',
+            index: index
+        });
+    }
+
+</script>

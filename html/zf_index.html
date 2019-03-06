@@ -1,0 +1,274 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <title>首页导航</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../css/style.css"/>
+    <style>
+
+        header {
+            background-color: #fff;
+
+        }
+
+        header ul li {
+            color: #323237;
+            position: relative;
+            font-size: 15px;
+            /*padding: 1% 5%;*/
+            display: none;
+            /*display: flex;
+            align-items: center;*/
+            height: 50px;
+        }
+
+
+
+        header ul li.active {
+            display: block;
+        }
+        header ul li img{
+          vertical-align: middle;
+          width: 28px;
+            height: 28px;
+          margin-right: 2%;
+          margin-left:20px;
+        }
+
+        #footer {
+            background-color: #fff;
+            padding-top: 5px;
+            box-sizing: border-box;
+        }
+
+        #footer ul li {
+            padding-top: 36px;
+            padding-bottom: 4px;
+            background: url() no-repeat center 2px;
+            background-size: auto 30px;
+            text-align: center;
+        }
+
+        #footer ul li.active {
+            color: #FF9000;
+        }
+
+        #footer ul li:nth-child(1) {
+            background-image: url(../image/hx.png);
+        }
+
+        #footer ul li:nth-child(2) {
+            background-image: url(../image/cp.png);
+        }
+
+        #footer ul li:nth-child(3) {
+            background-image: url(../image/dd.png);
+        }
+
+        #footer ul li:nth-child(4) {
+            background-image: url(../image/zd.png);
+        }
+
+        #footer ul li:nth-child(1).active {
+            background-image: url(../image/hx-1.png);
+        }
+
+        #footer ul li:nth-child(2).active {
+            background-image: url(../image/cp-1.png);
+        }
+
+        #footer ul li:nth-child(3).active {
+            background-image: url(../image/dd-1.png);
+        }
+
+        #footer ul li:nth-child(4).active {
+            background-image: url(../image/zd-1.png);
+        }
+
+        html, body {
+            font-size: 14px;
+            height: 100%;
+            box-sizing: border-box;
+        }
+
+        .hover {
+            opacity: .8;
+        }
+
+        .flex-wrap {
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: flex;
+        }
+
+        .flex-con {
+            -webkit-box-flex: 1;
+            -webkit-flex: 1;
+            flex: 1;
+        }
+
+        .flex-vertical {
+            -webkit-box-orient: vertical;
+            -webkit-flex-flow: column;
+            flex-flow: column;
+        }
+
+        .border-t,
+        .border-b {
+            position: relative;
+        }
+
+        .border-t:before,
+        .border-b:after {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            background: #ddd;
+            right: 0;
+            height: 1px;
+            -webkit-transform: scaleY(0.5);
+            transform: scaleY(0.5);
+            -webkit-transform-origin: 0 0;
+            transform-origin: 0 0;
+        }
+
+        .border-b:after {
+            top: auto;
+            bottom: 0;
+        }
+
+        #wrap {
+            height: 100%;
+        }
+
+        .hcenter{
+          width: 5rem;
+          position: absolute;
+          left: 0;
+          right: 0;
+          top: 0;
+          bottom: 0;
+          margin: auto;
+          text-align: center;
+          display: inline-block;
+          height: 1.5rem;
+          font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+<div id="wrap" class="flex-wrap flex-vertical">
+    <header id="header" style="padding-top:25px;height: 50px;">
+        <ul style="height: 50px;">
+            <li class="border-b active" id="jsslidel"><img src="../image/personal.png" alt=""><span style="font-size: 17px;">供货商</span><span class="hcenter"></span></li>
+            <li class="border-b" id="jsslide2"><img src="../image/personal.png" alt=""><span style="font-size: 17px;">供货商</span><span class="hcenter"></span></li>
+            <li class="border-b" id="jsslide3"><img src="../image/personal.png" alt=""><span style="font-size: 17px;">供货商</span><span class="hcenter">订单列表</span></li>
+            <li class="border-b" id="jsslide4"><img src="../image/personal.png" alt=""><span style="font-size: 17px;">供货商</span><span class="hcenter">账单列表</span></li>
+        </ul>
+    </header>
+
+    <div id="main" class="flex-con">
+
+    </div>
+
+    <div id="footer" class="border-t">
+        <ul class="flex-wrap">
+            <li tapmode="hover" onclick="randomSwitchBtn( this );" class="flex-con active">核销</li>
+            <li tapmode="hover" onclick="randomSwitchBtn( this );" class="flex-con">产品</li>
+            <li tapmode="hover" onclick="randomSwitchBtn( this );" class="flex-con">订单</li>
+            <li tapmode="hover" onclick="randomSwitchBtn( this );" class="flex-con">账单</li>
+        </ul>
+    </div>
+</div>
+</body>
+</html>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/jquery.min.js"></script>
+<script type="text/javascript">
+    apiready = function () {
+        api.addEventListener({
+            name: 'keyback'
+        }, function (ret, err) {
+            api.confirm({
+                title: '退出提示',
+                msg: '确定要退出宿盟网络吗',
+                buttons: ['确定', '取消']
+            }, function (ret, err) {
+                var index = ret.buttonIndex;
+                if (index == 1) {
+                    api.closeWidget({
+                        id: 'A6058346594837',
+                        retData: {
+                            name: 'closeWidget'
+                        },
+                        silent: true
+                    });
+                }
+            });
+        })
+        funIniGroup();
+    }
+
+
+    $('#jsslidel,#jsslide2,#jsslide3,#jsslide4').on({
+      'click':function(){
+        api.openSlidPane({
+            type: 'left'
+        });
+      }
+    })
+
+    function funIniGroup() {
+        var eHeaderLis = $api.domAll('header li'),
+            frames = [];
+        for (var i = 0, len = eHeaderLis.length; i < len; i++) {
+            frames.push({
+                name: 'zf_frame' + i,
+                url: 'zf_frame' + i + '.html',
+                bgColor: 'rgba(0,0,0,.2)',
+                bounces: false
+
+            })
+        }
+        api.openFrameGroup({
+            name: 'group',
+            scrollEnabled: false,
+            rect: {
+                x: 0,
+                y: $api.dom('header').offsetHeight,
+                w: api.winWidth,
+                h: $api.dom('#main').offsetHeight
+            },
+            index: 0,
+            frames: frames
+        }, function (ret, err) {
+
+        });
+    }
+
+    // 随意切换按钮
+    function randomSwitchBtn(tag) {
+        if (tag == $api.dom('#footer li.active')) return;
+        var eFootLis = $api.domAll('#footer li'),
+            eHeaderLis = $api.domAll('header li'),
+            index = 0;
+        for (var i = 0, len = eFootLis.length; i < len; i++) {
+            if (tag == eFootLis[i]) {
+                index = i;
+            } else {
+                $api.removeCls(eFootLis[i], 'active');
+                $api.removeCls(eHeaderLis[i], 'active');
+            }
+        }
+        $api.addCls(eFootLis[index], 'active');
+        $api.addCls(eHeaderLis[index], 'active');
+        api.setFrameGroupIndex({
+            name: 'group',
+            index: index
+        });
+    }
+</script>
